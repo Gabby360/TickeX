@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role     @default(USER)
+  events    Event[]
+  tickets   Ticket[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ORGANIZER
+  ADMIN
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  category    String
+  date        DateTime
+  location    String
+  price       Int      @default(0) // price in GH₵ (0 = free)
+  image       String   @default("https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800")
+  featured    Boolean  @default(false)
+  organizerId String
+  organizer   User     @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  tickets     Ticket[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Ticket {
+  id               String    @id @default(uuid())
+  eventId          String
+  userId           String
+  status           String    @default("PAID") // PAID, SCANNED, REFUNDED
+  qrCode           String    @unique @default(uuid())
+  paymentReference String?   @unique
+  scannedAt        DateTime?
+  event            Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
