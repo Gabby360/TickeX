@@ -423,7 +423,7 @@ export default function AdminDashboardPage() {
                           <div className="font-bold text-white flex items-center gap-2">
                             {u.name || "Unnamed User"}
                             {u.role === "ADMIN" && (
-                              <ShieldCheck className="w-4 h-4 text-orange-500 flex-shrink-0" title="System Admin" />
+                              <ShieldCheck className="w-4 h-4 text-orange-500 flex-shrink-0" />
                             )}
                           </div>
                           <div className="text-slate-400 text-xs mt-0.5">{u.email}</div>
