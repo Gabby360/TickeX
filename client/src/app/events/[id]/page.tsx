@@ -30,6 +30,7 @@ export default function EventDetailsPage() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<"idle" | "processing" | "success">("idle");
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [purchasedTicketId, setPurchasedTicketId] = useState<string | null>(null);
 
   // Load Paystack Script on component mount
   useEffect(() => {
@@ -101,10 +102,9 @@ export default function EventDetailsPage() {
         });
 
         if (res.ok) {
+          const ticketData = await res.json();
+          setPurchasedTicketId(ticketData.id);
           setPaymentStatus("success");
-          setTimeout(() => {
-            router.push("/dashboard");
-          }, 1500);
         } else {
           const data = await res.json();
           setCheckoutError(data.message || "Failed to create free ticket");
@@ -143,10 +143,10 @@ export default function EventDetailsPage() {
             })
               .then(async (res) => {
                 if (res.ok) {
-                  setPaymentStatus("success");
-                  setTimeout(() => {
-                    router.push("/dashboard");
-                  }, 1500);
+                  res.json().then((ticketData) => {
+                    setPurchasedTicketId(ticketData.id);
+                    setPaymentStatus("success");
+                  });
                 } else {
                   const data = await res.json();
                   setCheckoutError(data.message || "Payment verification failed");
@@ -264,10 +264,86 @@ export default function EventDetailsPage() {
               </div>
 
               {paymentStatus === "success" ? (
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <CheckCircle2 className="w-16 h-16 text-emerald-500 mb-4 animate-in fade-in zoom-in" />
-                  <h4 className="text-xl font-bold text-white mb-2">Payment Successful!</h4>
-                  <p className="text-slate-400">Generating your ticket...</p>
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <style>{`
+                    @media print {
+                      body * {
+                        visibility: hidden;
+                      }
+                      #printable-ticket, #printable-ticket * {
+                        visibility: visible;
+                      }
+                      #printable-ticket {
+                        position: fixed;
+                        left: 50%;
+                        top: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 100%;
+                        max-width: 360px;
+                        border: none !important;
+                        background: white !important;
+                        color: black !important;
+                        box-shadow: none !important;
+                        padding: 24px !important;
+                        border-radius: 16px !important;
+                      }
+                      #printable-ticket * {
+                        color: black !important;
+                      }
+                      #printable-ticket span {
+                        background: #f3f4f6 !important;
+                        color: #1f2937 !important;
+                        border: 1px solid #e5e7eb !important;
+                      }
+                    }
+                  `}</style>
+
+                  <CheckCircle2 className="w-12 h-12 text-emerald-500 mb-4 animate-in fade-in zoom-in print:hidden" />
+                  <h4 className="text-xl font-bold text-white mb-2 print:hidden">Payment Successful!</h4>
+                  <p className="text-slate-400 text-sm mb-6 print:hidden">Your ticket pass has been generated successfully.</p>
+
+                  <div id="printable-ticket" className="bg-[#030014] border border-white/10 rounded-2xl p-6 w-full max-w-sm mx-auto flex flex-col items-center shadow-lg print:border-none print:shadow-none">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="text-[10px] font-black uppercase bg-orange-500/10 text-orange-400 border border-orange-500/20 px-3 py-1 rounded-full">
+                        Official Ticket Pass
+                      </span>
+                    </div>
+                    <h4 className="text-xl font-bold text-white mb-1">{event?.title}</h4>
+                    <p className="text-slate-400 text-xs mb-4">{formattedDate} @ {formattedTime}</p>
+                    <p className="text-slate-400 text-xs mb-4 flex items-center gap-1 justify-center">
+                      <MapPin className="w-3.5 h-3.5 text-slate-500" />
+                      {event?.location}
+                    </p>
+                    
+                    <div className="bg-white p-3 rounded-xl mb-4">
+                      <img 
+                        src={`https://chart.googleapis.com/chart?chs=180x180&cht=qr&chl=${encodeURIComponent(purchasedTicketId || "")}&choe=UTF-8`}
+                        alt="Ticket QR Code"
+                        className="w-40 h-40"
+                      />
+                    </div>
+                    
+                    <p className="text-slate-500 text-[10px] font-mono mb-1">TICKET ID</p>
+                    <p className="text-white text-xs font-mono font-bold">{purchasedTicketId}</p>
+                  </div>
+
+                  <div className="mt-6 flex flex-col sm:flex-row gap-3 w-full px-4 print:hidden">
+                    <button
+                      onClick={() => window.print()}
+                      className="flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition-all text-sm flex items-center justify-center gap-2"
+                    >
+                      Download Ticket (PDF)
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowCheckout(false);
+                        router.push("/");
+                      }}
+                      className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-slate-300 font-bold rounded-xl border border-white/10 text-sm transition-all"
+                    >
+                      Close
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <>
