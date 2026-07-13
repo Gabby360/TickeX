@@ -144,9 +144,6 @@ function ScannerContent() {
               <Scanner 
                 onScan={handleScan}
                 formats={["qr_code"]}
-                components={{
-                  audio: false,
-                }}
               />
             </div>
           )}
