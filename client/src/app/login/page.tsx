@@ -35,8 +35,8 @@ export default function LoginPage() {
       localStorage.setItem("tickex_token", data.accessToken);
       localStorage.setItem("tickex_user", JSON.stringify(data.user));
 
-      // Redirect to dashboard
-      router.push("/dashboard");
+      // Redirect to homepage
+      router.push("/");
     } catch (err: any) {
       setError(err.message || "Something went wrong.");
     } finally {
