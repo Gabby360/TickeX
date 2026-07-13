@@ -145,7 +145,6 @@ function ScannerContent() {
                 onScan={handleScan}
                 formats={["qr_code"]}
                 components={{
-                  tracker: true,
                   audio: false,
                 }}
               />
