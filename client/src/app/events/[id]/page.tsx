@@ -33,6 +33,8 @@ export default function EventDetailsPage() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [purchasedTicketId, setPurchasedTicketId] = useState<string | null>(null);
   const [purchasedTicket, setPurchasedTicket] = useState<any>(null);
+  const [guestName, setGuestName] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
 
   // Load Paystack Script on component mount
   useEffect(() => {
@@ -95,11 +97,8 @@ export default function EventDetailsPage() {
   }, [id]);
 
   const handleBuyClick = () => {
-    const token = localStorage.getItem("tickex_token");
-    if (!token) {
-      router.push("/login");
-      return;
-    }
+    setGuestName("");
+    setGuestEmail("");
     setShowCheckout(true);
   };
 
@@ -108,8 +107,109 @@ export default function EventDetailsPage() {
     setCheckoutError(null);
 
     const token = localStorage.getItem("tickex_token");
+
+    // Guest checkout flow
+    if (!token) {
+      if (!guestName.trim() || !guestEmail.trim()) {
+        setCheckoutError("Please fill in your name and email address.");
+        setPaymentStatus("idle");
+        return;
+      }
+
+      // If event is free, directly create the ticket (no gateway popup needed)
+      if (event?.price === 0) {
+        try {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/tickets/purchase-guest`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ 
+              eventId: event.id,
+              name: guestName,
+              email: guestEmail,
+            }),
+          });
+
+          if (res.ok) {
+            const ticketData = await res.json();
+            setPurchasedTicket(ticketData);
+            setPurchasedTicketId(ticketData.id);
+            setPaymentStatus("success");
+          } else {
+            const data = await res.json();
+            setCheckoutError(data.message || "Failed to create free ticket");
+            setPaymentStatus("idle");
+          }
+        } catch (err) {
+          setCheckoutError("Network error during free checkout");
+          setPaymentStatus("idle");
+        }
+        return;
+      }
+
+      // Paid event via Paystack
+      if (typeof window !== "undefined" && (window as any).PaystackPop) {
+        const paystackPublicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_a6cb93e6dc982c7a7a6de65cfd2d14210e75a0dc";
+        
+        try {
+          const handler = (window as any).PaystackPop.setup({
+            key: paystackPublicKey,
+            email: guestEmail,
+            amount: event ? event.price * 100 : 0,
+            currency: "GHS",
+            callback: function (response: any) {
+              setPaymentStatus("processing");
+              fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/tickets/purchase-guest`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  eventId: event?.id,
+                  email: guestEmail,
+                  name: guestName,
+                  reference: response.reference,
+                }),
+              })
+                .then(async (res) => {
+                  if (res.ok) {
+                    res.json().then((ticketData) => {
+                      setPurchasedTicket(ticketData);
+                      setPurchasedTicketId(ticketData.id);
+                      setPaymentStatus("success");
+                    });
+                  } else {
+                    const data = await res.json();
+                    setCheckoutError(data.message || "Payment verification failed");
+                    setPaymentStatus("idle");
+                  }
+                })
+                .catch(() => {
+                  setCheckoutError("Verification network error");
+                  setPaymentStatus("idle");
+                });
+            },
+            onClose: () => {
+              setPaymentStatus("idle");
+              setCheckoutError("Payment window closed");
+            }
+          });
+          handler.openIframe();
+        } catch (err: any) {
+          setCheckoutError("Failed to initialize Paystack Pop: " + err.message);
+          setPaymentStatus("idle");
+        }
+      } else {
+        setCheckoutError("Payment SDK loading... Please wait a moment and try again.");
+        setPaymentStatus("idle");
+      }
+      return;
+    }
+
+    // Logged-in user checkout flow
     const userStr = localStorage.getItem("tickex_user");
-    if (!token || !userStr) {
+    if (!userStr) {
       router.push("/login");
       return;
     }
@@ -392,6 +492,34 @@ export default function EventDetailsPage() {
                 </div>
               ) : (
                 <>
+                  {/* Guest details form if not logged in */}
+                  {!localStorage.getItem("tickex_token") && (
+                    <div className="space-y-4 mb-6 print:hidden">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Full Name</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Jane Doe"
+                          value={guestName}
+                          onChange={(e) => setGuestName(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-sm transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Email Address</label>
+                        <input
+                          type="email"
+                          required
+                          placeholder="name@example.com"
+                          value={guestEmail}
+                          onChange={(e) => setGuestEmail(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-sm transition-colors"
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   <div className="bg-slate-950 p-4 rounded-2xl mb-6 print:hidden">
                     <p className="text-slate-400 text-sm mb-1">Order Summary</p>
                     <p className="text-white font-bold mb-4 line-clamp-1">{event.title}</p>

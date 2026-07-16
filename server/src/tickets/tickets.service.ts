@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class TicketsService {
@@ -192,5 +193,27 @@ export class TicketsService {
       totalRevenue,
       attendees: tickets,
     };
+  }
+
+  async purchaseTicketGuest(eventId: string, email: string, name: string, reference?: string) {
+    // 1. Find or create shadow user for the guest
+    let user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      const placeholderPassword = await bcrypt.hash('guest-' + Math.random().toString(36), 12);
+      user = await this.prisma.user.create({
+        data: {
+          email,
+          name: name || 'Guest User',
+          password: placeholderPassword,
+          role: 'USER',
+        },
+      });
+    }
+
+    // 2. Call the regular purchaseTicket with the user's ID
+    return this.purchaseTicket(user.id, eventId, reference);
   }
 }
