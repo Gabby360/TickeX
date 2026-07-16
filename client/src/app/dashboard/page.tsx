@@ -204,6 +204,7 @@ export default function DashboardPage() {
 
         const data = await response.json();
         setUser(data);
+        localStorage.setItem("tickex_user", JSON.stringify(data));
       } catch (err) {
         // Clear invalid auth data and redirect
         localStorage.removeItem("tickex_token");
@@ -230,7 +231,7 @@ export default function DashboardPage() {
   const handleLogout = () => {
     localStorage.removeItem("tickex_token");
     localStorage.removeItem("tickex_user");
-    router.push("/");
+    window.location.href = "/";
   };
 
   if (loading) {

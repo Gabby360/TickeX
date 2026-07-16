@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, MapPin, Tag, User, CheckCircle2, Loader2, CreditCard } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, Tag, User, CheckCircle2, Loader2, CreditCard, Ticket } from "lucide-react";
 import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
 
@@ -241,8 +241,9 @@ export default function EventDetailsPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-300 font-sans pb-24 relative">
       {/* Checkout Modal */}
+      {/* Checkout Modal */}
       {showCheckout && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto print:bg-transparent print:absolute print:inset-0">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 bg-slate-950/95 overflow-y-auto print:bg-transparent print:absolute print:inset-0">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200 my-auto print:bg-transparent print:border-none print:shadow-none">
             <div className="p-6 md:p-8">
               {paymentStatus !== "success" && (
@@ -303,25 +304,18 @@ export default function EventDetailsPage() {
                       }
                       #printable-ticket {
                         position: absolute !important;
-                        top: 20px !important;
+                        top: 40px !important;
                         left: 50% !important;
                         transform: translateX(-50%) !important;
                         width: 100% !important;
-                        max-width: 340px !important;
+                        max-width: 300px !important;
+                        box-shadow: none !important;
                         border: 1px solid #e2e8f0 !important;
                         background: white !important;
-                        color: black !important;
-                        box-shadow: none !important;
-                        padding: 20px !important;
-                        border-radius: 16px !important;
+                        border-radius: 20px !important;
                       }
                       #printable-ticket * {
                         color: black !important;
-                      }
-                      #printable-ticket span {
-                        background: #f3f4f6 !important;
-                        color: #1f2937 !important;
-                        border: 1px solid #e5e7eb !important;
                       }
                     }
                   `}</style>
@@ -330,28 +324,52 @@ export default function EventDetailsPage() {
                   <h4 className="text-xl font-bold text-white mb-2 print:hidden">Payment Successful!</h4>
                   <p className="text-slate-400 text-sm mb-6 print:hidden">Your ticket pass has been generated successfully.</p>
 
-                  <div id="printable-ticket" className="bg-[#030014] border border-white/10 rounded-2xl p-6 w-full max-w-sm mx-auto flex flex-col items-center shadow-lg print:border-none print:shadow-none">
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="text-[10px] font-black uppercase bg-orange-500/10 text-orange-400 border border-orange-500/20 px-3 py-1 rounded-full">
-                        Official Ticket Pass
+                  <div id="printable-ticket" className="bg-white text-slate-800 rounded-2xl w-full max-w-[300px] mx-auto shadow-lg overflow-hidden flex flex-col border border-slate-100 print:border-slate-200">
+                    {/* Top Section */}
+                    <div className="p-5 pb-4 flex flex-col items-center text-center">
+                      {/* Brand Header */}
+                      <div className="flex items-center gap-1.5 mb-3">
+                        <Ticket className="w-4 h-4 text-orange-500 rotate-12" />
+                        <span className="text-xs font-black tracking-tight text-slate-900">
+                          Ticke<span className="text-orange-500">X</span>
+                        </span>
+                      </div>
+                      
+                      <span className="text-[9px] font-bold uppercase tracking-widest bg-orange-50 text-orange-600 border border-orange-100 px-2.5 py-0.5 rounded-full mb-3">
+                        {event?.category || "Pass"}
+                      </span>
+                      
+                      <h4 className="text-base font-black text-slate-900 leading-tight mb-1">{event?.title}</h4>
+                      <p className="text-[10px] text-slate-500 font-medium mb-2">{formattedDate} @ {formattedTime}</p>
+                      
+                      <p className="text-[10px] text-slate-600 font-bold flex items-center gap-1 justify-center">
+                        <MapPin className="w-3.5 h-3.5 text-orange-500" />
+                        {event?.location}
+                      </p>
+                    </div>
+
+                    {/* Dashed Tear Line & Notches */}
+                    <div className="relative w-full h-0 border-t-2 border-dashed border-slate-200">
+                      {/* Left Notch */}
+                      <div className="absolute left-[-10px] top-[-10px] w-5 h-5 bg-slate-900 rounded-full border border-transparent z-10 print:bg-white" />
+                      {/* Right Notch */}
+                      <div className="absolute right-[-10px] top-[-10px] w-5 h-5 bg-slate-900 rounded-full border border-transparent z-10 print:bg-white" />
+                    </div>
+
+                    {/* Bottom Section (Tear-off Stub) */}
+                    <div className="p-5 pt-4 flex flex-col items-center bg-slate-50/50">
+                      <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm mb-3 flex items-center justify-center">
+                        <QRCodeSVG 
+                          value={purchasedTicket?.qrCode || purchasedTicketId || ""} 
+                          size={130} 
+                        />
+                      </div>
+                      
+                      <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest mb-1">TICKET PASS</span>
+                      <span className="text-[10px] font-mono font-bold text-slate-700 tracking-wider">
+                        {purchasedTicket?.id ? purchasedTicket.id.substring(0, 18).toUpperCase() : purchasedTicketId?.substring(0, 18).toUpperCase()}...
                       </span>
                     </div>
-                    <h4 className="text-xl font-bold text-white mb-1">{event?.title}</h4>
-                    <p className="text-slate-400 text-xs mb-4">{formattedDate} @ {formattedTime}</p>
-                    <p className="text-slate-400 text-xs mb-4 flex items-center gap-1 justify-center">
-                      <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                      {event?.location}
-                    </p>
-                    
-                    <div className="bg-white p-3 rounded-xl mb-4 flex items-center justify-center">
-                      <QRCodeSVG 
-                        value={purchasedTicket?.qrCode || purchasedTicketId || ""} 
-                        size={160} 
-                      />
-                    </div>
-                    
-                    <p className="text-slate-500 text-[10px] font-mono mb-1">TICKET ID</p>
-                    <p className="text-white text-xs font-mono font-bold">{purchasedTicket?.id || purchasedTicketId}</p>
                   </div>
 
                   <div className="mt-6 flex flex-col sm:flex-row gap-3 w-full px-4 print:hidden">

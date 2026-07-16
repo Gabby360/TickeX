@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { 
   Search, 
   MapPin, 
@@ -16,7 +17,8 @@ import {
   X,
   CreditCard,
   Users,
-  Compass
+  Compass,
+  Loader2
 } from "lucide-react";
 
 
@@ -361,6 +363,17 @@ const SUCCESS_STORIES = [
 ];
 
 export default function LandingPage() {
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [applicantName, setApplicantName] = useState("");
+  const [applicantEmail, setApplicantEmail] = useState("");
+  const [orgName, setOrgName] = useState("");
+  const [eventType, setEventType] = useState("Music");
+  const [orgDesc, setOrgDesc] = useState("");
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [submittingForm, setSubmittingForm] = useState(false);
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -371,6 +384,36 @@ export default function LandingPage() {
 
   const featuresRef = useRef<HTMLDivElement>(null);
   const [featuresVisible, setFeaturesVisible] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("tickex_token");
+      const storedUser = localStorage.getItem("tickex_user");
+      if (token && storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (err) {
+          console.error("Error parsing user from localStorage:", err);
+        }
+      }
+    }
+  }, []);
+
+  const handleHostClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (user && (user.role === "ORGANIZER" || user.role === "ADMIN")) {
+      router.push("/dashboard");
+    } else {
+      setApplicantName("");
+      setApplicantEmail("");
+      setOrgName("");
+      setEventType("Music");
+      setOrgDesc("");
+      setFormSubmitted(false);
+      setSubmittingForm(false);
+      setShowUpgradeModal(true);
+    }
+  };
 
   useEffect(() => {
     if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
@@ -553,12 +596,12 @@ export default function LandingPage() {
                 >
                   Explore Events
                 </a>
-                <a 
-                  href="/register?role=organizer" 
+                <button 
+                  onClick={handleHostClick}
                   className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-100 text-slate-900 font-semibold rounded-full shadow-lg shadow-black/10 transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-center gap-2"
                 >
                   Host An Event
-                </a>
+                </button>
               </div>
 
               {/* Trust Indicators */}
@@ -812,12 +855,12 @@ export default function LandingPage() {
             >
               Find Your Event &rarr;
             </a>
-            <a 
-              href="/register?role=organizer" 
+            <button 
+              onClick={handleHostClick}
               className="w-full sm:w-auto px-8 py-3.5 bg-white/80 backdrop-blur-md border border-slate-200 hover:border-orange-200 hover:text-orange-600 text-slate-800 font-semibold rounded-full shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-center gap-2"
             >
               Create an Event +
-            </a>
+            </button>
           </div>
         </div>
 
@@ -1276,6 +1319,142 @@ export default function LandingPage() {
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* UPGRADE ROLE MODAL (ORGANIZER APPLICATION) */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white text-slate-900 rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-slate-100 animate-in zoom-in-95 duration-200 text-left max-h-[90vh] overflow-y-auto">
+            {formSubmitted ? (
+              <div className="text-center py-6">
+                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-6 mx-auto animate-bounce">
+                  <ShieldCheck className="w-9 h-9" />
+                </div>
+                <h3 className="text-2xl font-extrabold text-slate-900 mb-2">Application Submitted!</h3>
+                <p className="text-slate-500 text-sm mb-8 leading-relaxed max-w-md mx-auto text-center">
+                  Thank you for applying to host events on TickeX! Our administration team has received your application. We will review your organization details and upgrade your account to Organizer status within 24 hours. You'll receive a confirmation email once active.
+                </p>
+                <button
+                  onClick={() => setShowUpgradeModal(false)}
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-sm transition-colors duration-200"
+                >
+                  Close
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                setSubmittingForm(true);
+                // Simulate submitting to administration API
+                setTimeout(() => {
+                  setSubmittingForm(false);
+                  setFormSubmitted(true);
+                }, 1500);
+              }} className="space-y-5">
+                <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                  <Users className="w-6 h-6 text-orange-500 shrink-0" />
+                  <div>
+                    <h3 className="text-xl font-black text-slate-900">Become an Organizer</h3>
+                    <p className="text-slate-400 text-xs mt-0.5">Submit details to start organizing events</p>
+                  </div>
+                </div>
+
+                {/* Editable Applicant Details */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={applicantName}
+                      onChange={(e) => setApplicantName(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      value={applicantEmail}
+                      onChange={(e) => setApplicantEmail(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+                    />
+                  </div>
+                </div>
+
+                {/* Organization Details */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Organization, Company or Individual Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Neon Horizon Events"
+                    value={orgName}
+                    onChange={(e) => setOrgName(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 text-sm transition-colors"
+                  />
+                </div>
+
+                {/* Event Type Select */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Primary Event Category</label>
+                  <select
+                    value={eventType}
+                    onChange={(e) => setEventType(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-orange-500 text-sm transition-colors"
+                  >
+                    <option value="Music">Music & Concerts</option>
+                    <option value="Tech">Tech Conferences</option>
+                    <option value="Sports">Sports Events</option>
+                    <option value="Food">Food Festivals</option>
+                    <option value="Comedy">Comedy Shows</option>
+                    <option value="Other">Other / Workshops</option>
+                  </select>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tell us about your events</label>
+                  <textarea
+                    required
+                    rows={3}
+                    placeholder="Describe what events you plan to list on TickeX..."
+                    value={orgDesc}
+                    onChange={(e) => setOrgDesc(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 text-sm transition-colors"
+                  />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowUpgradeModal(false)}
+                    disabled={submittingForm}
+                    className="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3.5 rounded-xl text-sm transition-colors duration-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submittingForm}
+                    className="w-1/2 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400 text-white font-bold py-3.5 rounded-xl text-sm shadow-md transition-colors flex items-center justify-center gap-2"
+                  >
+                    {submittingForm ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      "Submit Application"
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}
