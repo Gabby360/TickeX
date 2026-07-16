@@ -31,6 +31,7 @@ export default function EventDetailsPage() {
   const [paymentStatus, setPaymentStatus] = useState<"idle" | "processing" | "success">("idle");
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [purchasedTicketId, setPurchasedTicketId] = useState<string | null>(null);
+  const [purchasedTicket, setPurchasedTicket] = useState<any>(null);
 
   // Load Paystack Script on component mount
   useEffect(() => {
@@ -65,6 +66,31 @@ export default function EventDetailsPage() {
     };
 
     fetchEvent();
+  }, [id]);
+
+  // Fetch existing ticket if already purchased
+  useEffect(() => {
+    if (!id) return;
+    const fetchExistingTicket = async () => {
+      const token = localStorage.getItem("tickex_token");
+      if (!token) return;
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/tickets/my-tickets`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const tickets = await res.json();
+          const existing = tickets.find((t: any) => t.eventId === id);
+          if (existing) {
+            setPurchasedTicket(existing);
+            setPurchasedTicketId(existing.id);
+          }
+        }
+      } catch (err) {
+        console.error("Error checking existing tickets:", err);
+      }
+    };
+    fetchExistingTicket();
   }, [id]);
 
   const handleBuyClick = () => {
@@ -103,6 +129,7 @@ export default function EventDetailsPage() {
 
         if (res.ok) {
           const ticketData = await res.json();
+          setPurchasedTicket(ticketData);
           setPurchasedTicketId(ticketData.id);
           setPaymentStatus("success");
         } else {
@@ -144,6 +171,7 @@ export default function EventDetailsPage() {
               .then(async (res) => {
                 if (res.ok) {
                   res.json().then((ticketData) => {
+                    setPurchasedTicket(ticketData);
                     setPurchasedTicketId(ticketData.id);
                     setPaymentStatus("success");
                   });
@@ -213,10 +241,10 @@ export default function EventDetailsPage() {
     <div className="min-h-screen bg-slate-950 text-slate-300 font-sans pb-24 relative">
       {/* Checkout Modal */}
       {showCheckout && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm print:bg-transparent print:absolute print:inset-0">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200 print:bg-transparent print:border-none print:shadow-none">
             <div className="p-6 md:p-8">
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center justify-between mb-8 print:hidden">
                 <h3 className="text-2xl font-bold text-white">Checkout</h3>
                 {paymentStatus === "idle" && (
                   <button
@@ -229,7 +257,7 @@ export default function EventDetailsPage() {
               </div>
 
               {/* Progress Stepper */}
-              <div className="flex items-center justify-between mb-8 relative px-4">
+              <div className="flex items-center justify-between mb-8 relative px-4 print:hidden">
                 <div className="absolute top-3 left-8 right-8 h-1 bg-slate-800 -z-10 rounded-full"></div>
                 <div 
                   className="absolute top-3 left-8 h-1 bg-indigo-500 -z-10 rounded-full transition-all duration-500" 
@@ -267,24 +295,26 @@ export default function EventDetailsPage() {
                 <div className="flex flex-col items-center justify-center py-6 text-center">
                   <style>{`
                     @media print {
-                      body * {
-                        visibility: hidden;
-                      }
-                      #printable-ticket, #printable-ticket * {
-                        visibility: visible;
+                      html, body {
+                        background: white !important;
+                        color: black !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        height: auto !important;
+                        overflow: visible !important;
                       }
                       #printable-ticket {
-                        position: fixed;
-                        left: 50%;
-                        top: 50%;
-                        transform: translate(-50%, -50%);
-                        width: 100%;
-                        max-width: 360px;
-                        border: none !important;
+                        position: absolute !important;
+                        top: 20px !important;
+                        left: 50% !important;
+                        transform: translateX(-50%) !important;
+                        width: 100% !important;
+                        max-width: 340px !important;
+                        border: 1px solid #e2e8f0 !important;
                         background: white !important;
                         color: black !important;
                         box-shadow: none !important;
-                        padding: 24px !important;
+                        padding: 20px !important;
                         border-radius: 16px !important;
                       }
                       #printable-ticket * {
@@ -317,14 +347,14 @@ export default function EventDetailsPage() {
                     
                     <div className="bg-white p-3 rounded-xl mb-4">
                       <img 
-                        src={`https://chart.googleapis.com/chart?chs=180x180&cht=qr&chl=${encodeURIComponent(purchasedTicketId || "")}&choe=UTF-8`}
+                        src={`https://chart.googleapis.com/chart?chs=180x180&cht=qr&chl=${encodeURIComponent(purchasedTicket?.qrCode || purchasedTicketId || "")}&choe=UTF-8`}
                         alt="Ticket QR Code"
                         className="w-40 h-40"
                       />
                     </div>
                     
                     <p className="text-slate-500 text-[10px] font-mono mb-1">TICKET ID</p>
-                    <p className="text-white text-xs font-mono font-bold">{purchasedTicketId}</p>
+                    <p className="text-white text-xs font-mono font-bold">{purchasedTicket?.id || purchasedTicketId}</p>
                   </div>
 
                   <div className="mt-6 flex flex-col sm:flex-row gap-3 w-full px-4 print:hidden">
@@ -347,7 +377,7 @@ export default function EventDetailsPage() {
                 </div>
               ) : (
                 <>
-                  <div className="bg-slate-950 p-4 rounded-2xl mb-6">
+                  <div className="bg-slate-950 p-4 rounded-2xl mb-6 print:hidden">
                     <p className="text-slate-400 text-sm mb-1">Order Summary</p>
                     <p className="text-white font-bold mb-4 line-clamp-1">{event.title}</p>
                     
@@ -358,7 +388,7 @@ export default function EventDetailsPage() {
                   </div>
 
                   {checkoutError && (
-                    <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm text-center">
+                    <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm text-center print:hidden">
                       {checkoutError}
                     </div>
                   )}
@@ -366,7 +396,7 @@ export default function EventDetailsPage() {
                   <button
                     onClick={handleConfirmPayment}
                     disabled={paymentStatus === "processing"}
-                    className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/50 text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none flex justify-center items-center gap-2"
+                    className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/50 text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none flex justify-center items-center gap-2 print:hidden"
                   >
                     {paymentStatus === "processing" ? (
                       <>
@@ -387,8 +417,9 @@ export default function EventDetailsPage() {
         </div>
       )}
 
-      {/* Header / Back Button */}
-      <div className="absolute top-0 left-0 w-full p-6 z-10 flex items-center justify-between">
+      <div className="print:hidden">
+        {/* Header / Back Button */}
+        <div className="absolute top-0 left-0 w-full p-6 z-10 flex items-center justify-between">
         <button
           onClick={() => router.push("/")}
           className="flex items-center gap-2 px-4 py-2 bg-slate-900/80 hover:bg-slate-800 rounded-full text-sm font-medium transition-colors"
@@ -478,19 +509,31 @@ export default function EventDetailsPage() {
               </p>
             </div>
 
-            <button 
-              onClick={handleBuyClick}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98]"
-            >
-              Buy Ticket
-            </button>
+            {purchasedTicket ? (
+              <button 
+                onClick={() => {
+                  setShowCheckout(true);
+                  setPaymentStatus("success");
+                }}
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+              >
+                <CheckCircle2 className="w-5 h-5" />
+                View Ticket Pass
+              </button>
+            ) : (
+              <button 
+                onClick={handleBuyClick}
+                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98]"
+              >
+                Buy Ticket
+              </button>
+            )}
             
             <p className="text-xs text-center text-slate-500 mt-2">
               Secure payment processed via TickeX
             </p>
           </div>
         </div>
-
       </div>
     </div>
   );

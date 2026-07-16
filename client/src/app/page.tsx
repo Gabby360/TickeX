@@ -336,12 +336,38 @@ const GALLERY_IMAGES = [
   { url: "https://images.unsplash.com/photo-1585647347483-22b66260dfff?auto=format&fit=crop&q=80&w=800", label: "Comedy Nights" }
 ];
 
+const SUCCESS_STORIES = [
+  {
+    name: "Sarah Mensah",
+    role: "Music Festival Director",
+    quote: "TickeX transformed our ticketing operations completely. Payouts were processed immediately after the event, and validation queue times were cut by 70%. We saw a 35% increase in online sales!",
+    metric: "+35% Sales Boost",
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300"
+  },
+  {
+    name: "Kofi Boateng",
+    role: "Tech Summit Coordinator",
+    quote: "Our attendees loved how fast the checkout was. Paystack integration works flawlessly, allowing users to secure passes in under 10 seconds. Highly recommend TickeX for any corporate event.",
+    metric: "10s Checkout Speed",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300"
+  },
+  {
+    name: "Ama Serwaa",
+    role: "Food Bazaar Organizer",
+    quote: "We used to have problems with duplicated tickets at the entrance. The encrypted, single-use QR codes solved fraud overnight. Scanning was smooth using just our phones.",
+    metric: "0% Ticket Fraud",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=300"
+  }
+];
+
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [locationQuery, setLocationQuery] = useState("");
   const [dbEvents, setDbEvents] = useState<any[]>([]);
+  const [showStoriesModal, setShowStoriesModal] = useState(false);
+  const [activeStoryIdx, setActiveStoryIdx] = useState(0);
 
   const featuresRef = useRef<HTMLDivElement>(null);
   const [featuresVisible, setFeaturesVisible] = useState(false);
@@ -841,12 +867,9 @@ export default function LandingPage() {
         id="features" 
         ref={featuresRef}
         className="py-24 relative overflow-hidden bg-cover bg-center"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1600')" }}
-      >
-        {/* Dark overlay to maintain high text contrast */}
-        <div className="absolute inset-0 bg-slate-950/88 z-[1]" />
-        
-        {/* Glows */}
+      {/* KEY PILLARS FEATURE SECTION */}
+      <section id="features" ref={featuresRef} className="bg-slate-50 py-24 relative overflow-hidden">
+        {/* Subtle background glow */}
         <div className="absolute top-1/2 left-0 w-96 h-96 bg-orange-950/20 rounded-full blur-[100px] pointer-events-none z-[2]" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-[3]">
@@ -854,17 +877,17 @@ export default function LandingPage() {
             <span className="text-orange-400 font-bold tracking-wider uppercase text-sm mb-3 inline-block">
               Premium Infrastructure
             </span>
-            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4 text-slate-950">
               Designed For Seamless Entry
             </h2>
-            <p className="text-slate-300 text-lg font-light">
+            <p className="text-slate-600 text-lg font-light">
               TickeX builds the link between online ticketing and physical validation.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             {/* Feature 1 */}
-            <div className={`relative overflow-hidden group rounded-[2rem] p-8 h-[20rem] flex flex-col justify-start border border-slate-200/80 border-l-[5px] border-l-orange-500 hover:shadow-lg bg-white transform transition-all duration-700 ease-out ${featuresVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
+            <div className={`relative overflow-hidden group rounded-[2rem] p-8 h-[20rem] flex flex-col justify-start border border-slate-200/80 border-l-[5px] border-l-orange-500 group-hover:border-l-[12px] group-hover:border-l-orange-600 hover:shadow-lg bg-white transform transition-all duration-500 ease-out ${featuresVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
               {/* Background Image Watermark */}
               <img 
                 src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=600" 
@@ -895,7 +918,7 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 2 */}
-            <div className={`relative overflow-hidden group rounded-[2rem] p-8 h-[25rem] flex flex-col justify-start border border-slate-200/80 border-l-[5px] border-l-orange-500 hover:shadow-lg bg-white transform transition-all duration-700 delay-200 ease-out ${featuresVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
+            <div className={`relative overflow-hidden group rounded-[2rem] p-8 h-[25rem] flex flex-col justify-start border border-slate-200/80 border-l-[5px] border-l-orange-500 group-hover:border-l-[12px] group-hover:border-l-orange-600 hover:shadow-lg bg-white transform transition-all duration-500 delay-200 ease-out ${featuresVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
               {/* Background Image Watermark */}
               <img 
                 src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=600" 
@@ -926,7 +949,7 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 3 */}
-            <div className={`relative overflow-hidden group rounded-[2rem] p-8 h-[30rem] flex flex-col justify-start border border-slate-200/80 border-l-[5px] border-l-orange-500 hover:shadow-lg bg-white transform transition-all duration-700 delay-400 ease-out ${featuresVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
+            <div className={`relative overflow-hidden group rounded-[2rem] p-8 h-[30rem] flex flex-col justify-start border border-slate-200/80 border-l-[5px] border-l-orange-500 group-hover:border-l-[12px] group-hover:border-l-orange-600 hover:shadow-lg bg-white transform transition-all duration-500 delay-400 ease-out ${featuresVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
               {/* Background Image Watermark */}
               <img 
                 src="https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&q=80&w=600" 
@@ -1077,12 +1100,12 @@ export default function LandingPage() {
             Learn why organizers and attendees trust our solutions to complete their seamless customer journeys.
           </p>
 
-          <a 
-            href="#events"
-            className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#020617] hover:bg-[#0f172a] text-white font-semibold rounded-full shadow-lg shadow-slate-900/20 transition-all duration-200 hover:-translate-y-0.5"
+          <button 
+            onClick={() => setShowStoriesModal(true)}
+            className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#020617] hover:bg-[#0f172a] text-white font-semibold rounded-full shadow-lg shadow-slate-900/20 transition-all duration-205 hover:-translate-y-0.5 cursor-pointer"
           >
             Read Success Stories <ChevronRight className="w-4 h-4" />
-          </a>
+          </button>
         </div>
       </section>
 
@@ -1179,6 +1202,88 @@ export default function LandingPage() {
 
         </div>
       </footer>
+
+      {/* SUCCESS STORIES CAROUSEL MODAL */}
+      {showStoriesModal && (
+        <div className="fixed inset-0 z-50 bg-[#030014]/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#020617] border border-white/10 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 text-white">
+            
+            {/* Modal Header */}
+            <div className="p-6 md:p-8 flex items-center justify-between border-b border-white/10">
+              <div>
+                <span className="text-orange-400 font-bold uppercase text-[10px] tracking-wider mb-1 block">Success Stories</span>
+                <h3 className="text-2xl font-bold text-white">What our organizers say</h3>
+              </div>
+              <button 
+                onClick={() => setShowStoriesModal(false)}
+                className="p-2 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-xl transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body / Story Carousel */}
+            <div className="p-6 md:p-8">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                {/* Left Side: Avatar and Metric */}
+                <div className="md:col-span-4 flex flex-col items-center text-center">
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-orange-500 shadow-lg shadow-orange-500/25 mb-4">
+                    <img 
+                      src={SUCCESS_STORIES[activeStoryIdx].image} 
+                      alt={SUCCESS_STORIES[activeStoryIdx].name} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h4 className="font-bold text-white leading-tight">{SUCCESS_STORIES[activeStoryIdx].name}</h4>
+                  <p className="text-[11px] text-slate-400 mb-4">{SUCCESS_STORIES[activeStoryIdx].role}</p>
+                  
+                  {/* Highlight Metric */}
+                  <span className="bg-orange-500/10 text-orange-400 border border-orange-500/20 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider">
+                    {SUCCESS_STORIES[activeStoryIdx].metric}
+                  </span>
+                </div>
+
+                {/* Right Side: Testimony Quote */}
+                <div className="md:col-span-8 flex flex-col justify-center relative">
+                  <span className="text-6xl font-serif text-orange-500/10 leading-none h-4 absolute -top-8 -left-2 select-none">“</span>
+                  <p className="text-slate-300 italic text-lg leading-relaxed mb-6 font-light">
+                    {SUCCESS_STORIES[activeStoryIdx].quote}
+                  </p>
+                  <span className="text-6xl font-serif text-orange-500/10 leading-none h-4 absolute -bottom-4 right-0 select-none">”</span>
+                </div>
+              </div>
+
+              {/* Slider Dots */}
+              <div className="flex justify-center gap-2 mt-8">
+                {SUCCESS_STORIES.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveStoryIdx(idx)}
+                    className={`h-2 rounded-full transition-all duration-300 ${activeStoryIdx === idx ? 'w-8 bg-orange-500' : 'w-2 bg-white/20 hover:bg-white/40'}`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-6 md:p-8 border-t border-white/10 bg-slate-950/40 flex justify-between items-center">
+              <button 
+                onClick={() => setActiveStoryIdx((prev) => (prev - 1 + SUCCESS_STORIES.length) % SUCCESS_STORIES.length)}
+                className="px-5 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 rounded-xl font-bold text-sm transition-all"
+              >
+                Previous
+              </button>
+              <button 
+                onClick={() => setActiveStoryIdx((prev) => (prev + 1) % SUCCESS_STORIES.length)}
+                className="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-sm shadow-md transition-all"
+              >
+                Next Story
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );
