@@ -862,11 +862,6 @@ export default function LandingPage() {
         )}
       </section>
 
-      {/* WHY TICKEX SECTION (Key Pillars) */}
-      <section 
-        id="features" 
-        ref={featuresRef}
-        className="py-24 relative overflow-hidden bg-cover bg-center"
       {/* KEY PILLARS FEATURE SECTION */}
       <section id="features" ref={featuresRef} className="bg-slate-50 py-24 relative overflow-hidden">
         {/* Subtle background glow */}
