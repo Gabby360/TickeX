@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Calendar, MapPin, Tag, User, CheckCircle2, Loader2, CreditCard } from "lucide-react";
 import Image from "next/image";
+import { QRCodeSVG } from "qrcode.react";
 
 type EventType = {
   id: string;
@@ -241,55 +242,52 @@ export default function EventDetailsPage() {
     <div className="min-h-screen bg-slate-950 text-slate-300 font-sans pb-24 relative">
       {/* Checkout Modal */}
       {showCheckout && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm print:bg-transparent print:absolute print:inset-0">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200 print:bg-transparent print:border-none print:shadow-none">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto print:bg-transparent print:absolute print:inset-0">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200 my-auto print:bg-transparent print:border-none print:shadow-none">
             <div className="p-6 md:p-8">
-              <div className="flex items-center justify-between mb-8 print:hidden">
-                <h3 className="text-2xl font-bold text-white">Checkout</h3>
-                {paymentStatus === "idle" && (
-                  <button
-                    onClick={() => setShowCheckout(false)}
-                    className="text-slate-400 hover:text-white"
-                  >
-                    Cancel
-                  </button>
-                )}
-              </div>
+              {paymentStatus !== "success" && (
+                <div className="flex items-center justify-between mb-8 print:hidden">
+                  <h3 className="text-2xl font-bold text-white">Checkout</h3>
+                  {paymentStatus === "idle" && (
+                    <button
+                      onClick={() => setShowCheckout(false)}
+                      className="text-slate-400 hover:text-white"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              )}
 
               {/* Progress Stepper */}
-              <div className="flex items-center justify-between mb-8 relative px-4 print:hidden">
-                <div className="absolute top-3 left-8 right-8 h-1 bg-slate-800 -z-10 rounded-full"></div>
-                <div 
-                  className="absolute top-3 left-8 h-1 bg-indigo-500 -z-10 rounded-full transition-all duration-500" 
-                  style={{ width: paymentStatus === 'success' ? 'calc(100% - 4rem)' : '0%' }}
-                ></div>
-                
-                {/* Step 1: Details */}
-                <div className="flex flex-col items-center gap-2">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${paymentStatus === 'success' ? 'bg-indigo-500 border-none' : 'bg-slate-900 border-2 border-indigo-500'}`}>
-                    {paymentStatus === 'success' ? (
-                      <CheckCircle2 className="w-4 h-4 text-white" />
-                    ) : (
+              {paymentStatus !== "success" && (
+                <div className="flex items-center justify-between mb-8 relative px-4 print:hidden">
+                  <div className="absolute top-3 left-8 right-8 h-1 bg-slate-800 -z-10 rounded-full"></div>
+                  <div 
+                    className="absolute top-3 left-8 h-1 bg-indigo-500 -z-10 rounded-full transition-all duration-500" 
+                    style={{ width: '0%' }}
+                  ></div>
+                  
+                  {/* Step 1: Details */}
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center bg-slate-900 border-2 border-indigo-500">
                       <div className="w-2.5 h-2.5 bg-indigo-500 rounded-full"></div>
-                    )}
+                    </div>
+                    <span className="text-xs font-medium text-indigo-400">
+                      Details
+                    </span>
                   </div>
-                  <span className={`text-xs font-medium ${paymentStatus === 'success' ? 'text-slate-400' : 'text-indigo-400'}`}>
-                    Details
-                  </span>
-                </div>
 
-                {/* Step 2: Submitted */}
-                <div className="flex flex-col items-center gap-2">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center bg-slate-900 border-2 ${paymentStatus === 'success' ? 'border-indigo-500' : 'border-slate-700'}`}>
-                    {paymentStatus === 'success' && (
-                      <div className="w-2.5 h-2.5 bg-indigo-500 rounded-full"></div>
-                    )}
+                  {/* Step 2: Submitted */}
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center bg-slate-900 border-2 border-slate-700">
+                    </div>
+                    <span className="text-xs font-medium text-slate-600">
+                      Submitted
+                    </span>
                   </div>
-                  <span className={`text-xs font-medium ${paymentStatus === 'success' ? 'text-indigo-400' : 'text-slate-600'}`}>
-                    Submitted
-                  </span>
                 </div>
-              </div>
+              )}
 
               {paymentStatus === "success" ? (
                 <div className="flex flex-col items-center justify-center py-6 text-center">
@@ -345,11 +343,10 @@ export default function EventDetailsPage() {
                       {event?.location}
                     </p>
                     
-                    <div className="bg-white p-3 rounded-xl mb-4">
-                      <img 
-                        src={`https://chart.googleapis.com/chart?chs=180x180&cht=qr&chl=${encodeURIComponent(purchasedTicket?.qrCode || purchasedTicketId || "")}&choe=UTF-8`}
-                        alt="Ticket QR Code"
-                        className="w-40 h-40"
+                    <div className="bg-white p-3 rounded-xl mb-4 flex items-center justify-center">
+                      <QRCodeSVG 
+                        value={purchasedTicket?.qrCode || purchasedTicketId || ""} 
+                        size={160} 
                       />
                     </div>
                     
