@@ -16,16 +16,6 @@ export class TicketsController {
     return this.ticketsService.purchaseTicket(req.user.id, eventId, reference);
   }
 
-  @Post('purchase-guest')
-  purchaseTicketGuest(
-    @Body('eventId') eventId: string,
-    @Body('email') email: string,
-    @Body('name') name: string,
-    @Body('reference') reference?: string,
-  ) {
-    return this.ticketsService.purchaseTicketGuest(eventId, email, name, reference);
-  }
-
   @UseGuards(JwtAuthGuard)
   @Get('my-tickets')
   getMyTickets(@Request() req: any) {

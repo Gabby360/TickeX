@@ -401,11 +401,15 @@ export default function LandingPage() {
 
   const handleHostClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (user && (user.role === "ORGANIZER" || user.role === "ADMIN")) {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+    if (user.role === "ORGANIZER" || user.role === "ADMIN") {
       router.push("/dashboard");
     } else {
-      setApplicantName("");
-      setApplicantEmail("");
+      setApplicantName(user.name || "");
+      setApplicantEmail(user.email || "");
       setOrgName("");
       setEventType("Music");
       setOrgDesc("");
