@@ -329,9 +329,10 @@ const FALLBACK_EVENTS: Record<string, any> = {
 
     // Helper to open Paystack popup
     const triggerPaystack = () => {
-      const paystackPublicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_a6cb93e6dc982c7a7a6de65cfd2d14210e75a0dc";
+      const paystackPublicKey = (process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_a6cb93e6dc982c7a7a6de65cfd2d14210e75a0dc").trim();
       const txRef = "TICKEX_" + Date.now() + "_" + Math.floor(Math.random() * 1000000);
       const amountPesewas = event ? Math.round(Number(event.price) * 100) : 0;
+      const userEmail = currentUser?.email && currentUser.email.trim() !== "" ? currentUser.email.trim() : "customer@tickex.com";
 
       const onPaystackSuccess = async (response: any) => {
         setPaymentStatus("processing");
@@ -366,7 +367,7 @@ const FALLBACK_EVENTS: Record<string, any> = {
           id: ref,
           eventId: (event as any)?.id || id,
           eventTitle: (event as any)?.title || "Event Ticket Pass",
-          userEmail: currentUser?.email || "user@tickex.com",
+          userEmail: userEmail,
           userName: currentUser?.name || "Valued Guest",
           qrCode: ref,
           status: "VALID",
@@ -388,7 +389,7 @@ const FALLBACK_EVENTS: Record<string, any> = {
         if (typeof (window as any).PaystackPop?.setup === "function") {
           const handler = (window as any).PaystackPop.setup({
             key: paystackPublicKey,
-            email: currentUser.email,
+            email: userEmail,
             amount: amountPesewas,
             currency: "GHS",
             ref: txRef,
@@ -405,7 +406,7 @@ const FALLBACK_EVENTS: Record<string, any> = {
           const paystack = new (window as any).PaystackPop();
           paystack.newTransaction({
             key: paystackPublicKey,
-            email: currentUser.email,
+            email: userEmail,
             amount: amountPesewas,
             currency: "GHS",
             ref: txRef,
@@ -421,7 +422,7 @@ const FALLBACK_EVENTS: Record<string, any> = {
         setPaymentStatus("idle");
       } catch (err: any) {
         console.error("Paystack launch error:", err);
-        setCheckoutError("Could not open Paystack payment window. Please try again.");
+        setCheckoutError("Paystack error: " + (err?.message || "Unable to open payment window"));
         setPaymentStatus("idle");
       }
     };
