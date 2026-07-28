@@ -208,12 +208,14 @@ function EventDetailsContent() {
     // Helper to open Paystack popup
     const triggerPaystack = () => {
       const paystackPublicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_a6cb93e6dc982c7a7a6de65cfd2d14210e75a0dc";
+      const txRef = "TICKEX_" + Date.now() + "_" + Math.floor(Math.random() * 1000000);
       try {
         const handler = (window as any).PaystackPop.setup({
           key: paystackPublicKey,
           email: currentUser.email,
           amount: event ? Math.round(event.price * 100) : 0, // Paystack amount is in pesewas/kobo
           currency: "GHS",
+          ref: txRef,
           callback: function (response: any) {
             // Payment succeeded on Paystack: now verify on backend
             setPaymentStatus("processing");
@@ -225,7 +227,7 @@ function EventDetailsContent() {
               },
               body: JSON.stringify({
                 eventId: event?.id,
-                reference: response.reference,
+                reference: response.reference || txRef,
               }),
             })
               .then(async (res) => {
@@ -261,15 +263,12 @@ function EventDetailsContent() {
       triggerPaystack();
     } else {
       // Dynamically load Paystack script if not yet ready
-      setPaymentStatus("processing");
       const script = document.createElement("script");
       script.src = "https://js.paystack.co/v1/inline.js";
       script.onload = () => {
-        setPaymentStatus("idle");
         triggerPaystack();
       };
       script.onerror = () => {
-        setPaymentStatus("idle");
         setCheckoutError("Could not load Paystack payment gateway. Please check connection.");
       };
       document.body.appendChild(script);
