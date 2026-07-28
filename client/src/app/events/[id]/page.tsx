@@ -392,6 +392,7 @@ const FALLBACK_EVENTS: Record<string, any> = {
             amount: amountPesewas,
             currency: "GHS",
             ref: txRef,
+            channels: ["mobile_money", "card"],
             callback: onPaystackSuccess,
             onClose: () => {
               setPaymentStatus("idle");
@@ -406,19 +407,20 @@ const FALLBACK_EVENTS: Record<string, any> = {
             amount: amountPesewas,
             currency: "GHS",
             ref: txRef,
+            channels: ["mobile_money", "card"],
             onSuccess: onPaystackSuccess,
             onCancel: () => {
               setPaymentStatus("idle");
             },
           });
         } else {
-          // Direct fallback purchase if Paystack popup fails to initialize
-          onPaystackSuccess({ reference: txRef });
+          setCheckoutError("Paystack payment gateway is loading. Please try again in a moment.");
+          setPaymentStatus("idle");
         }
       } catch (err: any) {
         console.error("Paystack launch error:", err);
-        // Direct fallback purchase
-        onPaystackSuccess({ reference: txRef });
+        setCheckoutError("Unable to open Paystack payment window. Please check connection and try again.");
+        setPaymentStatus("idle");
       }
     };
 
