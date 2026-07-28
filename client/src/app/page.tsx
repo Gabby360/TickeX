@@ -859,7 +859,7 @@ export default function LandingPage() {
                 <div className="grid grid-cols-2 gap-y-4 gap-x-4 border-b border-white/10 border-dashed pb-4 mb-4">
                   <div>
                     <span className="text-[10px] tracking-wider text-slate-400 block mb-0.5 font-bold uppercase">TICKET HOLDER</span>
-                    <span className="text-sm sm:text-base font-extrabold text-white">Abena Korkor Yaa</span>
+                    <span className="text-sm sm:text-base font-extrabold text-white">Abena Yaa</span>
                   </div>
                   <div>
                     <span className="text-[10px] tracking-wider text-slate-400 block mb-0.5 font-bold uppercase">SEAT CATEGORY</span>
