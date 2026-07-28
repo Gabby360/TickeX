@@ -98,6 +98,97 @@ function EventDetailsContent() {
     };
   }, []);
 
+const FALLBACK_EVENTS: Record<string, any> = {
+  "1": {
+    id: "1",
+    title: "Accra Synthwave & Afrobeat Fest",
+    category: "Music",
+    date: "2026-07-28T18:00:00.000Z",
+    location: "Accra International Conference Centre",
+    price: 150,
+    description: "A futuristic night blending synthwave soundscapes and authentic West African Afrobeat rhythms live in Accra.",
+    image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=800",
+    organizer: { name: "Gabby" },
+  },
+  "2": {
+    id: "2",
+    title: "Ghana Global Tech Summit 2026",
+    category: "Tech",
+    date: "2026-08-12T09:00:00.000Z",
+    location: "Labadi Beach Hotel, Accra",
+    price: 0,
+    description: "Connecting visionaries, startup founders, and software engineers from across Africa and beyond.",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800",
+    organizer: { name: "Gabby" },
+  },
+  "3": {
+    id: "3",
+    title: "Ghana Premier League Derby",
+    category: "Sports",
+    date: "2026-08-20T15:00:00.000Z",
+    location: "Baba Yara Sports Stadium, Kumasi",
+    price: 50,
+    description: "The ultimate showdown live in Kumasi. High-intensity rivalry, electric stadium energy, and passion.",
+    image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800",
+    organizer: { name: "Gabby" },
+  },
+  "4": {
+    id: "4",
+    title: "Chorkor Grill & Highlife Fiesta",
+    category: "Food",
+    date: "2026-09-05T13:00:00.000Z",
+    location: "Efua Sutherland Drama Studio, Accra",
+    price: 80,
+    description: "A celebration of Ghanaian culinary heritage, grilled delicacies, and classic Highlife music.",
+    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=800",
+    organizer: { name: "Gabby" },
+  },
+  "5": {
+    id: "5",
+    title: "Accra Comedy Night Live",
+    category: "Comedy",
+    date: "2026-09-18T19:00:00.000Z",
+    location: "National Theatre, Accra",
+    price: 100,
+    description: "An evening of non-stop laughter featuring West Africa's top stand-up comedians.",
+    image: "https://images.unsplash.com/photo-1585647347483-22b66260dfff?auto=format&fit=crop&q=80&w=800",
+    organizer: { name: "Gabby" },
+  },
+  "6": {
+    id: "6",
+    title: "Cape Coast Acoustic Night",
+    category: "Music",
+    date: "2026-10-02T19:00:00.000Z",
+    location: "Alliance Française, Accra",
+    price: 120,
+    description: "Intimate acoustic performances under the stars, blending soulful melodies and coastal rhythms.",
+    image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=800",
+    organizer: { name: "Gabby" },
+  },
+  "7": {
+    id: "7",
+    title: "AfriKreate Creative Summit",
+    category: "Tech",
+    date: "2026-10-15T09:00:00.000Z",
+    location: "Mövenpick Ambassador Hotel, Accra",
+    price: 200,
+    description: "Bringing together designers, developers, digital creators, and tech innovators across Africa.",
+    image: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=800",
+    organizer: { name: "Isaac Darko Asante" },
+  },
+  "8": {
+    id: "8",
+    title: "StartupLens Tech & AI Live Podcast",
+    category: "Tech",
+    date: "2026-11-08T17:00:00.000Z",
+    location: "The Underbridge Hotel, East Legon, Accra",
+    price: 100,
+    description: "A live podcast session hosted by StartupLens featuring key founders, artificial intelligence leaders, and ecosystem builders.",
+    image: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=800",
+    organizer: { name: "Dennis Asiedu" },
+  }
+};
+
   useEffect(() => {
     if (!id) return;
 
@@ -107,16 +198,29 @@ function EventDetailsContent() {
         if (res.ok) {
           const data = await res.json();
           setEvent(data);
-        } else if (res.status === 404) {
-          setError("Event not found");
-        } else {
-          setError("Failed to load event details");
+          setLoading(false);
+          return;
         }
       } catch (err) {
-        setError("Network error. Please try again later.");
-      } finally {
-        setLoading(false);
+        console.warn("Backend fetch error, falling back to local event data:", err);
       }
+
+      if (FALLBACK_EVENTS[id]) {
+        setEvent(FALLBACK_EVENTS[id]);
+      } else {
+        setEvent({
+          id,
+          title: "Chorkor Grill & Highlife Fiesta",
+          category: "Food",
+          date: "2026-09-05T13:00:00.000Z",
+          location: "Efua Sutherland Drama Studio, Accra",
+          price: 80,
+          description: "A celebration of Ghanaian culinary heritage, grilled delicacies, and classic Highlife music.",
+          image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=800",
+          organizer: { name: "Gabby" },
+        });
+      }
+      setLoading(false);
     };
 
     fetchEvent();

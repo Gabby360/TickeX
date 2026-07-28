@@ -14,9 +14,9 @@ async function bootstrap() {
     }),
   );
 
-  // Enable CORS for the Next.js frontend
+  // Enable CORS for Next.js frontend (Vercel & Local)
   app.enableCors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    origin: true,
     credentials: true,
   });
 
