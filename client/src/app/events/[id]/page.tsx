@@ -18,6 +18,19 @@ type EventType = {
   organizer?: { name: string };
 };
 
+const getApiUrl = (path: string) => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  const baseUrl = envUrl.replace(/\/+$/, "");
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  if (baseUrl.endsWith("/api") && cleanPath.startsWith("/api/")) {
+    return `${baseUrl}${cleanPath.substring(4)}`;
+  }
+  if (!baseUrl.endsWith("/api") && !cleanPath.startsWith("/api/")) {
+    return `${baseUrl}/api${cleanPath}`;
+  }
+  return `${baseUrl}${cleanPath}`;
+};
+
 export default function EventDetailsPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#030014] text-white flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-orange-500" /></div>}>
@@ -90,7 +103,7 @@ function EventDetailsContent() {
 
     const fetchEvent = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/events/${id}`);
+        const res = await fetch(getApiUrl(`/api/events/${id}`));
         if (res.ok) {
           const data = await res.json();
           setEvent(data);
@@ -116,7 +129,7 @@ function EventDetailsContent() {
       const token = localStorage.getItem("tickex_token");
       if (!token) return;
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/tickets/my-tickets`, {
+        const res = await fetch(getApiUrl("/api/tickets/my-tickets"), {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.ok) {
@@ -166,7 +179,7 @@ function EventDetailsContent() {
     if (event?.price === 0) {
       setPaymentStatus("processing");
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/tickets/purchase`, {
+        const res = await fetch(getApiUrl("/api/tickets/purchase"), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -204,7 +217,7 @@ function EventDetailsContent() {
           callback: function (response: any) {
             // Payment succeeded on Paystack: now verify on backend
             setPaymentStatus("processing");
-            fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/tickets/purchase`, {
+            fetch(getApiUrl("/api/tickets/purchase"), {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
