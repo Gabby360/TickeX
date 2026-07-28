@@ -20,7 +20,7 @@ async function main() {
     gabriel = await prisma.user.create({
       data: {
         email: 'gabriel@milessystems.com',
-        name: 'Agblevor Gabriel',
+        name: 'Gabby',
         password,
         role: 'ORGANIZER',
       }
@@ -28,7 +28,7 @@ async function main() {
   } else {
     gabriel = await prisma.user.update({
       where: { id: gabriel.id },
-      data: { name: 'Agblevor Gabriel', role: 'ORGANIZER' }
+      data: { name: 'Gabby', role: 'ORGANIZER' }
     });
   }
 
