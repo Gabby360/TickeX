@@ -393,8 +393,10 @@ const FALLBACK_EVENTS: Record<string, any> = {
             amount: amountPesewas,
             currency: "GHS",
             ref: txRef,
-            callback: onPaystackSuccess,
-            onClose: () => {
+            callback: function (response: any) {
+              onPaystackSuccess(response);
+            },
+            onClose: function () {
               setPaymentStatus("idle");
             },
           });
@@ -410,8 +412,10 @@ const FALLBACK_EVENTS: Record<string, any> = {
             amount: amountPesewas,
             currency: "GHS",
             ref: txRef,
-            onSuccess: onPaystackSuccess,
-            onCancel: () => {
+            onSuccess: function (response: any) {
+              onPaystackSuccess(response);
+            },
+            onCancel: function () {
               setPaymentStatus("idle");
             },
           });
