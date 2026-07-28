@@ -25,6 +25,18 @@ import {
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
+const getApiUrl = (path: string) => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  const baseUrl = envUrl.replace(/\/+$/, "");
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  if (baseUrl.endsWith("/api") && cleanPath.startsWith("/api/")) {
+    return `${baseUrl}${cleanPath.substring(4)}`;
+  }
+  if (!baseUrl.endsWith("/api") && !cleanPath.startsWith("/api/")) {
+    return `${baseUrl}/api${cleanPath}`;
+  }
+  return `${baseUrl}${cleanPath}`;
+};
 
 interface CounterProps {
   target: number;
@@ -449,21 +461,40 @@ export default function LandingPage() {
   const fetchMyTickets = async () => {
     if (typeof window === "undefined") return;
     const token = localStorage.getItem("tickex_token");
-    if (!token) return;
     setLoadingTickets(true);
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/tickets/my-tickets`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setMyTickets(data);
+
+    let serverTickets: any[] = [];
+    if (token) {
+      try {
+        const response = await fetch(getApiUrl("/api/tickets/my-tickets"), {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+          serverTickets = await response.json();
+        }
+      } catch (err) {
+        console.warn("Error fetching server tickets:", err);
       }
-    } catch (err) {
-      console.error("Error loading tickets:", err);
-    } finally {
-      setLoadingTickets(false);
     }
+
+    // Merge with local storage purchased tickets so every ticket bought is ALWAYS visible
+    let localTickets: any[] = [];
+    try {
+      const localStr = localStorage.getItem("tickex_purchased_tickets");
+      if (localStr) {
+        localTickets = JSON.parse(localStr);
+      }
+    } catch (e) {}
+
+    const combined = [...serverTickets];
+    for (const lt of localTickets) {
+      if (!combined.some((st: any) => st.id === lt.id || st.eventId === lt.eventId)) {
+        combined.push(lt);
+      }
+    }
+
+    setMyTickets(combined);
+    setLoadingTickets(false);
   };
 
   const handleCreateEvent = async (e: React.FormEvent) => {

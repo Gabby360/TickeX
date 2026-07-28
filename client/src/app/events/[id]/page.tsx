@@ -297,6 +297,12 @@ const FALLBACK_EVENTS: Record<string, any> = {
           const ticketData = await res.json();
           setPurchasedTicket(ticketData);
           setPurchasedTicketId(ticketData.id);
+          try {
+            const savedStr = localStorage.getItem("tickex_purchased_tickets");
+            const savedList = savedStr ? JSON.parse(savedStr) : [];
+            savedList.unshift(ticketData);
+            localStorage.setItem("tickex_purchased_tickets", JSON.stringify(savedList));
+          } catch (e) {}
           setPaymentStatus("success");
           return;
         }
@@ -323,6 +329,12 @@ const FALLBACK_EVENTS: Record<string, any> = {
 
       setPurchasedTicket(fallbackTicket);
       setPurchasedTicketId(txRef);
+      try {
+        const savedStr = localStorage.getItem("tickex_purchased_tickets");
+        const savedList = savedStr ? JSON.parse(savedStr) : [];
+        savedList.unshift(fallbackTicket);
+        localStorage.setItem("tickex_purchased_tickets", JSON.stringify(savedList));
+      } catch (e) {}
       setPaymentStatus("success");
       return;
     }
@@ -333,6 +345,20 @@ const FALLBACK_EVENTS: Record<string, any> = {
       const txRef = "TICKEX_" + Date.now() + "_" + Math.floor(Math.random() * 1000000);
       const amountPesewas = event ? Math.round(Number(event.price) * 100) : 0;
       const userEmail = currentUser?.email && currentUser.email.trim() !== "" ? currentUser.email.trim() : "customer@tickex.com";
+
+      const saveTicketToLocalStorage = (ticketData: any) => {
+        try {
+          const savedStr = localStorage.getItem("tickex_purchased_tickets");
+          const savedList = savedStr ? JSON.parse(savedStr) : [];
+          const exists = savedList.some((t: any) => t.id === ticketData.id || t.eventId === ticketData.eventId);
+          if (!exists) {
+            savedList.unshift(ticketData);
+            localStorage.setItem("tickex_purchased_tickets", JSON.stringify(savedList));
+          }
+        } catch (e) {
+          console.error("Failed to save ticket to localStorage:", e);
+        }
+      };
 
       const onPaystackSuccess = async (response: any) => {
         setPaymentStatus("processing");
@@ -355,6 +381,7 @@ const FALLBACK_EVENTS: Record<string, any> = {
             const ticketData = await res.json();
             setPurchasedTicket(ticketData);
             setPurchasedTicketId(ticketData.id);
+            saveTicketToLocalStorage(ticketData);
             setPaymentStatus("success");
             return;
           }
@@ -382,6 +409,7 @@ const FALLBACK_EVENTS: Record<string, any> = {
 
         setPurchasedTicket(fallbackTicket);
         setPurchasedTicketId(ref);
+        saveTicketToLocalStorage(fallbackTicket);
         setPaymentStatus("success");
       };
 
