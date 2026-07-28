@@ -1254,44 +1254,56 @@ export default function LandingPage() {
             <svg className="absolute bottom-6 right-12 w-[24rem] h-[24rem] text-[#020617] transform -rotate-12" fill="none" stroke="currentColor" strokeWidth="0.8" viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M13 5v2M13 17v2M13 11v2" /></svg>
           </div>
           
-          <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-8 gap-3 sm:gap-4 max-w-5xl mx-auto justify-center">
+          <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2.5 sm:gap-4 max-w-6xl mx-auto justify-center">
             {/* Col 1 - Gabriel */}
-            <div className="flex flex-col gap-3 sm:gap-4 transform translate-y-2">
+            <div className="flex flex-col gap-2.5 sm:gap-4 transform translate-y-2">
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                 <img src="/gabriel.jpg" alt="Agblevor Gabriel" className="w-full h-full object-cover scale-[1.65] object-top" />
               </div>
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                 <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
+              <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+              </div>
             </div>
 
             {/* Col 2 - Isaac */}
-            <div className="flex flex-col gap-3 sm:gap-4 transform translate-y-10 sm:translate-y-8">
+            <div className="flex flex-col gap-2.5 sm:gap-4 transform translate-y-6 sm:translate-y-8">
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                 <img src="/isaac.jpg" alt="Isaac Darko Asante" className="w-full h-full object-cover scale-[1.48]" />
               </div>
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                 <img src="https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
+              <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+              </div>
             </div>
 
             {/* Col 3 - Dennis */}
-            <div className="flex flex-col gap-3 sm:gap-4 transform translate-y-0">
+            <div className="flex flex-col gap-2.5 sm:gap-4 transform translate-y-0">
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                 <img src="/dennis.jpg" alt="Dennis Asiedu" className="w-full h-full object-cover scale-[1.3] object-[38%_center]" />
               </div>
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                 <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
+              <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+              </div>
             </div>
 
             {/* Col 4 */}
-            <div className="hidden sm:flex flex-col gap-4 transform translate-y-6">
+            <div className="flex flex-col gap-2.5 sm:gap-4 transform translate-y-4">
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                 <img src="https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                 <img src="https://images.unsplash.com/photo-1531384441138-2736e62e0919?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+              </div>
+              <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
             </div>
 
