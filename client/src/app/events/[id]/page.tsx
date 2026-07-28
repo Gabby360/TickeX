@@ -151,7 +151,6 @@ function EventDetailsContent() {
   };
 
   const handleConfirmPayment = async () => {
-    setPaymentStatus("processing");
     setCheckoutError(null);
 
     const token = localStorage.getItem("tickex_token");
@@ -165,6 +164,7 @@ function EventDetailsContent() {
 
     // If event is free, directly create the ticket (no gateway popup needed)
     if (event?.price === 0) {
+      setPaymentStatus("processing");
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/tickets/purchase`, {
           method: "POST",
@@ -192,18 +192,17 @@ function EventDetailsContent() {
       return;
     }
 
-    // Trigger Paystack inline checkout for paid events
-    if (typeof window !== "undefined" && (window as any).PaystackPop) {
+    // Helper to open Paystack popup
+    const triggerPaystack = () => {
       const paystackPublicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_a6cb93e6dc982c7a7a6de65cfd2d14210e75a0dc";
-      
       try {
         const handler = (window as any).PaystackPop.setup({
           key: paystackPublicKey,
           email: currentUser.email,
-          amount: event ? event.price * 100 : 0, // Paystack amount is in pesewas/kobo
+          amount: event ? Math.round(event.price * 100) : 0, // Paystack amount is in pesewas/kobo
           currency: "GHS",
           callback: function (response: any) {
-            // Payment succeeded: now verify on backend and create ticket
+            // Payment succeeded on Paystack: now verify on backend
             setPaymentStatus("processing");
             fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/tickets/purchase`, {
               method: "POST",
@@ -218,11 +217,10 @@ function EventDetailsContent() {
             })
               .then(async (res) => {
                 if (res.ok) {
-                  res.json().then((ticketData) => {
-                    setPurchasedTicket(ticketData);
-                    setPurchasedTicketId(ticketData.id);
-                    setPaymentStatus("success");
-                  });
+                  const ticketData = await res.json();
+                  setPurchasedTicket(ticketData);
+                  setPurchasedTicketId(ticketData.id);
+                  setPaymentStatus("success");
                 } else {
                   const data = await res.json();
                   setCheckoutError(data.message || "Payment verification failed");
@@ -236,17 +234,32 @@ function EventDetailsContent() {
           },
           onClose: () => {
             setPaymentStatus("idle");
-            setCheckoutError("Payment window closed");
           }
         });
         handler.openIframe();
       } catch (err: any) {
-        setCheckoutError("Failed to initialize Paystack Pop: " + err.message);
+        setCheckoutError("Failed to open payment gateway: " + err.message);
         setPaymentStatus("idle");
       }
+    };
+
+    // Trigger Paystack inline checkout
+    if (typeof window !== "undefined" && (window as any).PaystackPop) {
+      triggerPaystack();
     } else {
-      setCheckoutError("Payment SDK loading... Please wait a moment and try again.");
-      setPaymentStatus("idle");
+      // Dynamically load Paystack script if not yet ready
+      setPaymentStatus("processing");
+      const script = document.createElement("script");
+      script.src = "https://js.paystack.co/v1/inline.js";
+      script.onload = () => {
+        setPaymentStatus("idle");
+        triggerPaystack();
+      };
+      script.onerror = () => {
+        setPaymentStatus("idle");
+        setCheckoutError("Could not load Paystack payment gateway. Please check connection.");
+      };
+      document.body.appendChild(script);
     }
   };
 
