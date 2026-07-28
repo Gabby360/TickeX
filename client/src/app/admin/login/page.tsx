@@ -2,12 +2,13 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, Lock, Mail, KeyRound, AlertTriangle, ArrowRight, Loader2 } from "lucide-react";
+import { ShieldCheck, Lock, Mail, KeyRound, AlertTriangle, ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -42,7 +43,7 @@ export default function AdminLoginPage() {
         if (role === "ADMIN") {
           router.push("/admin/dashboard");
         } else {
-          router.push("/dashboard");
+          router.push("/");
         }
       } else {
         setError(data.message || "Invalid credentials provided.");
@@ -95,7 +96,6 @@ export default function AdminLoginPage() {
                 <input
                   type="email"
                   required
-                  placeholder="admin@tickex.com or organizer@tickex.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-[#030014]/80 border border-white/15 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-orange-500 transition-colors"
@@ -110,13 +110,20 @@ export default function AdminLoginPage() {
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
-                  placeholder="••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-[#030014]/80 border border-white/15 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-orange-500 transition-colors font-mono"
+                  className="w-full bg-[#030014]/80 border border-white/15 rounded-xl pl-10 pr-11 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-orange-500 transition-colors font-mono"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-white transition-colors focus:outline-none cursor-pointer"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4 text-orange-400" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 

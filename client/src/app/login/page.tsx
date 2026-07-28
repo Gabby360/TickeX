@@ -2,12 +2,13 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Ticket, Mail, Lock, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
+import { Ticket, Mail, Lock, ArrowLeft, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -71,9 +72,6 @@ export default function LoginPage() {
           <h2 className="text-3xl font-extrabold tracking-tight">
             Welcome back to <span className="text-orange-500">TickeX</span>
           </h2>
-          <p className="mt-2 text-sm text-slate-400">
-            Sign in to manage your tickets and events
-          </p>
         </div>
 
         {/* Form Container */}
@@ -102,7 +100,6 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com"
                   className="block w-full pl-11 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl placeholder-slate-400 text-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-sm"
                 />
               </div>
@@ -123,13 +120,20 @@ export default function LoginPage() {
                   <Lock className="w-5 h-5" />
                 </div>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="block w-full pl-11 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl placeholder-slate-400 text-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-sm"
+                  className="block w-full pl-11 pr-11 py-3 bg-slate-800 border border-slate-700 rounded-xl placeholder-slate-400 text-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-sm"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-white transition-colors focus:outline-none cursor-pointer"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5 text-orange-400" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
             </div>
 

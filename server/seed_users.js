@@ -17,7 +17,7 @@ async function main() {
     update: { role: 'ORGANIZER', password },
     create: {
       email: 'organizer@tickex.com',
-      name: 'Accra Events Co (Organizer)',
+      name: 'Isaac Darko Asante',
       password,
       role: 'ORGANIZER',
     },
@@ -41,7 +41,7 @@ async function main() {
     update: { role: 'USER', password },
     create: {
       email: 'user@tickex.com',
-      name: 'John Doe (Attendee)',
+      name: 'Kwame Asante (Attendee)',
       password,
       role: 'USER',
     },

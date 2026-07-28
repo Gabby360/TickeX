@@ -18,8 +18,12 @@ import {
   CreditCard,
   Users,
   Compass,
-  Loader2
+  Loader2,
+  User,
+  LogOut,
+  Plus
 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 
 interface CounterProps {
@@ -97,7 +101,7 @@ const AnimatedCounter: React.FC<CounterProps> = ({
 const EVENTS = [
   {
     id: "1",
-    title: "Accra Synthwave Festival",
+    title: "Accra Synthwave & Afrobeat Fest",
     category: "Music",
     date: "July 28, 2026",
     location: "Accra International Conference Centre",
@@ -107,7 +111,7 @@ const EVENTS = [
   },
   {
     id: "2",
-    title: "Global Tech Summit 2026",
+    title: "Ghana Global Tech Summit 2026",
     category: "Tech",
     date: "August 12, 2026",
     location: "Labadi Beach Hotel, Accra",
@@ -117,7 +121,7 @@ const EVENTS = [
   },
   {
     id: "3",
-    title: "Championship Football Final",
+    title: "Ghana Premier League Derby",
     category: "Sports",
     date: "August 20, 2026",
     location: "Baba Yara Sports Stadium, Kumasi",
@@ -127,7 +131,7 @@ const EVENTS = [
   },
   {
     id: "4",
-    title: "Highlife & Bites",
+    title: "Chorkor Grill & Highlife Fiesta",
     category: "Food",
     date: "September 05, 2026",
     location: "Efua Sutherland Drama Studio, Accra",
@@ -137,7 +141,7 @@ const EVENTS = [
   },
   {
     id: "5",
-    title: "Comedy Night Live",
+    title: "Accra Comedy Night Live",
     category: "Comedy",
     date: "September 18, 2026",
     location: "National Theatre, Accra",
@@ -147,13 +151,35 @@ const EVENTS = [
   },
   {
     id: "6",
-    title: "Acoustic Evening Sessions",
+    title: "Cape Coast Acoustic Night",
     category: "Music",
     date: "October 02, 2026",
     location: "Alliance Française, Accra",
     price: "GH₵120",
     image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=800",
     featured: false,
+  },
+  {
+    id: "7",
+    title: "AfriKreate Creative Summit",
+    category: "Tech",
+    date: "October 15, 2026",
+    location: "Mövenpick Ambassador Hotel, Accra",
+    price: "GH₵200",
+    image: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=800",
+    organizer: "Isaac Darko Asante",
+    featured: true,
+  },
+  {
+    id: "8",
+    title: "StartupLens Tech & AI Live Podcast",
+    category: "Tech",
+    date: "November 08, 2026",
+    location: "The Underbridge Hotel, East Legon, Accra",
+    price: "GH₵100",
+    image: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=800",
+    organizer: "Dennis Asiedu",
+    featured: true,
   }
 ];
 
@@ -340,25 +366,22 @@ const GALLERY_IMAGES = [
 
 const SUCCESS_STORIES = [
   {
-    name: "Sarah Mensah",
-    role: "Music Festival Director",
-    quote: "TickeX transformed our ticketing operations completely. Payouts were processed immediately after the event, and validation queue times were cut by 70%. We saw a 35% increase in online sales!",
-    metric: "+35% Sales Boost",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300"
+    name: "Agblevor Gabriel",
+    role: "Founder & CEO, Miles Systems",
+    quote: "TickeX transformed our ticketing operations completely. Payouts were processed immediately via Paystack, and validation queue times at the gates were cut by 70%. We saw a 35% increase in online sales!",
+    image: "/gabriel.jpg"
   },
   {
-    name: "Kofi Boateng",
-    role: "Tech Summit Coordinator",
-    quote: "Our attendees loved how fast the checkout was. Paystack integration works flawlessly, allowing users to secure passes in under 10 seconds. Highly recommend TickeX for any corporate event.",
-    metric: "10s Checkout Speed",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300"
+    name: "Isaac Darko Asante",
+    role: "Founder, AfriKreate",
+    quote: "Our attendees loved how fast the checkout was. Paystack integration works flawlessly with MoMo and cards, allowing users to secure passes in under 10 seconds.",
+    image: "/isaac.jpg"
   },
   {
-    name: "Ama Serwaa",
-    role: "Food Bazaar Organizer",
-    quote: "We used to have problems with duplicated tickets at the entrance. The encrypted, single-use QR codes solved fraud overnight. Scanning was smooth using just our phones.",
-    metric: "0% Ticket Fraud",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=300"
+    name: "Dennis Asiedu",
+    role: "Founder, StartupLens",
+    quote: "We used to have problems with duplicated tickets at the entrance. The encrypted, single-use QR codes solved fraud overnight. Scanning was smooth using just our smartphones.",
+    image: "/dennis.jpg"
   }
 ];
 
@@ -385,6 +408,24 @@ export default function LandingPage() {
   const featuresRef = useRef<HTMLDivElement>(null);
   const [featuresVisible, setFeaturesVisible] = useState(false);
 
+  const [showMyTicketsModal, setShowMyTicketsModal] = useState(false);
+  const [myTickets, setMyTickets] = useState<any[]>([]);
+  const [loadingTickets, setLoadingTickets] = useState(false);
+  const [showTicketQrModal, setShowTicketQrModal] = useState<string | null>(null);
+
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [creatingEvent, setCreatingEvent] = useState(false);
+  const [createEventError, setCreateEventError] = useState<string | null>(null);
+  const [createFormData, setCreateFormData] = useState({
+    title: "",
+    description: "",
+    category: "Music",
+    date: "",
+    location: "",
+    price: 0,
+    image: "",
+  });
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("tickex_token");
@@ -399,6 +440,74 @@ export default function LandingPage() {
     }
   }, []);
 
+  const fetchMyTickets = async () => {
+    if (typeof window === "undefined") return;
+    const token = localStorage.getItem("tickex_token");
+    if (!token) return;
+    setLoadingTickets(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/tickets/my-tickets`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMyTickets(data);
+      }
+    } catch (err) {
+      console.error("Error loading tickets:", err);
+    } finally {
+      setLoadingTickets(false);
+    }
+  };
+
+  const handleCreateEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreatingEvent(true);
+    setCreateEventError(null);
+    const token = localStorage.getItem("tickex_token");
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/events`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...createFormData,
+          price: Number(createFormData.price),
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create event");
+      }
+
+      setShowCreateModal(false);
+      setCreateFormData({
+        title: "",
+        description: "",
+        category: "Music",
+        date: "",
+        location: "",
+        price: 0,
+        image: "",
+      });
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/events`);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setDbEvents(data);
+        }
+      }
+    } catch (err: any) {
+      setCreateEventError(err.message || "Something went wrong");
+    } finally {
+      setCreatingEvent(false);
+    }
+  };
+
   const handleHostClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!user) {
@@ -406,7 +515,7 @@ export default function LandingPage() {
       return;
     }
     if (user.role === "ORGANIZER" || user.role === "ADMIN") {
-      router.push("/dashboard");
+      setShowCreateModal(true);
     } else {
       setApplicantName(user.name || "");
       setApplicantEmail(user.email || "");
@@ -487,43 +596,84 @@ export default function LandingPage() {
             </div>
 
             {/* Desktop Nav Links */}
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden lg:flex items-center gap-8">
               <a href="#events" className="text-slate-300 hover:text-white transition-colors font-medium">Browse Events</a>
               <a href="#features" className="text-slate-300 hover:text-white transition-colors font-medium">Why TickeX</a>
               <a href="#organizers" className="text-slate-300 hover:text-white transition-colors font-medium">For Organizers</a>
             </div>
 
             {/* Auth CTAs */}
-            <div className="hidden md:flex items-center gap-4">
-              <a 
-                href="/login" 
-                className="text-white hover:text-orange-400 font-medium px-4 py-2 transition-colors duration-200"
-              >
-                Sign In
-              </a>
-              <a 
-                href="/register" 
-                className="bg-orange-500 hover:bg-orange-600 text-white font-medium px-6 py-2.5 rounded-full shadow-lg shadow-orange-500/25 hover:shadow-orange-500/35 transition-all duration-200 hover:-translate-y-0.5"
-              >
-                Get Started
-              </a>
+            <div className="hidden lg:flex items-center gap-4">
+              {user ? (
+                <>
+                  <button 
+                    onClick={() => {
+                      fetchMyTickets();
+                      setShowMyTicketsModal(true);
+                    }}
+                    className="flex items-center gap-2 text-white hover:text-orange-400 font-medium px-4 py-2 transition-colors duration-200 bg-white/5 rounded-full border border-white/10 hover:border-orange-500/50 text-sm"
+                  >
+                    <Ticket className="w-4 h-4 text-orange-500" />
+                    <span>My Tickets</span>
+                  </button>
+
+                  {(user.role === "ORGANIZER" || user.role === "ADMIN") && (
+                    <button
+                      onClick={() => setShowCreateModal(true)}
+                      className="bg-orange-500 hover:bg-orange-600 text-white font-medium px-5 py-2.5 rounded-full shadow-lg shadow-orange-500/25 hover:shadow-orange-500/35 transition-all duration-200 text-sm flex items-center gap-1.5"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Create Event</span>
+                    </button>
+                  )}
+
+                  <button 
+                    onClick={() => {
+                      localStorage.removeItem("tickex_token");
+                      localStorage.removeItem("tickex_user");
+                      setUser(null);
+                      setMyTickets([]);
+                    }}
+                    className="text-slate-400 hover:text-white font-medium px-3 py-2 transition-colors duration-200 text-sm flex items-center gap-1.5"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <a 
+                    href="/login" 
+                    className="text-white hover:text-orange-400 font-medium px-4 py-2 transition-colors duration-200"
+                  >
+                    Sign In
+                  </a>
+                  <a 
+                    href="/register" 
+                    className="bg-orange-500 hover:bg-orange-600 text-white font-medium px-6 py-2.5 rounded-full shadow-lg shadow-orange-500/25 hover:shadow-orange-500/35 transition-all duration-200 hover:-translate-y-0.5"
+                  >
+                    Get Started
+                  </a>
+                </>
+              )}
             </div>
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden">
+            {/* Mobile / Tablet Burger Menu Button */}
+            <div className="lg:hidden flex items-center">
               <button 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-slate-300 hover:text-white p-2 rounded-lg transition-colors focus:outline-none"
+                className="p-2.5 rounded-xl bg-white/10 border border-white/15 text-white hover:bg-white/20 hover:text-orange-400 transition-all focus:outline-none flex items-center justify-center shadow-md"
+                aria-label="Toggle Navigation Menu"
               >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {mobileMenuOpen ? <X className="w-6 h-6 text-orange-500" /> : <Menu className="w-6 h-6 text-white" />}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile / Tablet Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-[#030014] border-b border-white/10 px-4 pt-2 pb-6 space-y-3 animate-in fade-in slide-in-from-top-5 duration-200">
+          <div className="lg:hidden bg-[#030014] border-b border-white/10 px-4 pt-2 pb-6 space-y-3 animate-in fade-in slide-in-from-top-5 duration-200">
             <a 
               href="#events" 
               onClick={() => setMobileMenuOpen(false)}
@@ -546,18 +696,63 @@ export default function LandingPage() {
               For Organizers
             </a>
             <div className="border-t border-white/10 my-4 pt-4 flex flex-col gap-3 px-3">
-              <a 
-                href="/login" 
-                className="text-center text-white hover:text-orange-400 font-medium py-2.5 rounded-lg border border-white/20 hover:border-white/40 transition-colors"
-              >
-                Sign In
-              </a>
-              <a 
-                href="/register" 
-                className="text-center bg-orange-500 text-white font-medium py-2.5 rounded-lg shadow-lg shadow-orange-500/20"
-              >
-                Get Started
-              </a>
+              {user ? (
+                <>
+                  <button 
+                    onClick={() => {
+                      fetchMyTickets();
+                      setShowMyTicketsModal(true);
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-center text-white hover:text-orange-400 font-medium py-2.5 rounded-lg border border-white/20 hover:border-white/40 transition-colors flex items-center justify-center gap-2 text-sm"
+                  >
+                    <Ticket className="w-4 h-4 text-orange-500" />
+                    <span>My Tickets</span>
+                  </button>
+
+                  {(user.role === "ORGANIZER" || user.role === "ADMIN") && (
+                    <button
+                      onClick={() => {
+                        setShowCreateModal(true);
+                        setMobileMenuOpen(false);
+                      }}
+                      className="text-center bg-orange-500 text-white font-medium py-2.5 rounded-lg shadow-lg shadow-orange-500/20 text-sm flex items-center justify-center gap-1.5"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Create Event</span>
+                    </button>
+                  )}
+
+                  <button 
+                    onClick={() => {
+                      localStorage.removeItem("tickex_token");
+                      localStorage.removeItem("tickex_user");
+                      setUser(null);
+                      setMyTickets([]);
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-center bg-red-500/20 text-red-400 hover:bg-red-500/30 font-medium py-2.5 rounded-lg border border-red-500/30 transition-colors text-sm flex items-center justify-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <a 
+                    href="/login" 
+                    className="text-center text-white hover:text-orange-400 font-medium py-2.5 rounded-lg border border-white/20 hover:border-white/40 transition-colors"
+                  >
+                    Sign In
+                  </a>
+                  <a 
+                    href="/register" 
+                    className="text-center bg-orange-500 text-white font-medium py-2.5 rounded-lg shadow-lg shadow-orange-500/20"
+                  >
+                    Get Started
+                  </a>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -611,10 +806,16 @@ export default function LandingPage() {
               {/* Trust Indicators */}
               <div className="flex items-center gap-4">
                 <div className="flex -space-x-3">
-                  <img className="w-9 h-9 rounded-full border-2 border-[#030014] object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" alt="user" />
-                  <img className="w-9 h-9 rounded-full border-2 border-[#030014] object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100" alt="user" />
-                  <img className="w-9 h-9 rounded-full border-2 border-[#030014] object-cover" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100" alt="user" />
-                  <img className="w-9 h-9 rounded-full border-2 border-[#030014] object-cover" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100" alt="user" />
+                  <div className="w-9 h-9 rounded-full border-2 border-[#030014] overflow-hidden shrink-0">
+                    <img className="w-full h-full object-cover scale-[1.75] object-top" src="/gabriel.jpg" alt="Agblevor Gabriel" />
+                  </div>
+                  <div className="w-9 h-9 rounded-full border-2 border-[#030014] overflow-hidden shrink-0">
+                    <img className="w-full h-full object-cover scale-[1.48]" src="/isaac.jpg" alt="Isaac Darko Asante" />
+                  </div>
+                  <div className="w-9 h-9 rounded-full border-2 border-[#030014] overflow-hidden shrink-0">
+                    <img className="w-full h-full object-cover scale-[1.3] object-[38%_center]" src="/dennis.jpg" alt="Dennis Asiedu" />
+                  </div>
+                  <img className="w-9 h-9 rounded-full border-2 border-[#030014] object-cover" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=100" alt="user" />
                 </div>
                 <div className="text-xs sm:text-sm text-slate-400">
                   Trusted by <span className="text-white font-bold">10,000+ attendees</span> and top organizers.
@@ -652,7 +853,7 @@ export default function LandingPage() {
                 <div className="grid grid-cols-2 gap-y-4 gap-x-4 border-b border-white/10 border-dashed pb-4 mb-4">
                   <div>
                     <span className="text-[10px] tracking-wider text-slate-400 block mb-0.5 font-bold uppercase">TICKET HOLDER</span>
-                    <span className="text-sm sm:text-base font-extrabold text-white">Kwame Asante</span>
+                    <span className="text-sm sm:text-base font-extrabold text-white">Isaac Darko Asante</span>
                   </div>
                   <div>
                     <span className="text-[10px] tracking-wider text-slate-400 block mb-0.5 font-bold uppercase">SEAT CATEGORY</span>
@@ -1047,84 +1248,84 @@ export default function LandingPage() {
             <svg className="absolute bottom-6 right-12 w-[24rem] h-[24rem] text-[#020617] transform -rotate-12" fill="none" stroke="currentColor" strokeWidth="0.8" viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M13 5v2M13 17v2M13 11v2" /></svg>
           </div>
           
-          <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-4 max-w-5xl mx-auto justify-center">
-            {/* Col 1 */}
-            <div className="flex flex-col gap-4 transform translate-y-2">
+          <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-8 gap-3 sm:gap-4 max-w-5xl mx-auto justify-center">
+            {/* Col 1 - Gabriel */}
+            <div className="flex flex-col gap-3 sm:gap-4 transform translate-y-2">
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+                <img src="/gabriel.jpg" alt="Agblevor Gabriel" className="w-full h-full object-cover scale-[1.65] object-top" />
               </div>
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
-              </div>
-            </div>
-
-            {/* Col 2 */}
-            <div className="flex flex-col gap-4 transform translate-y-10">
-              <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
-              </div>
-              <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
             </div>
 
-            {/* Col 3 */}
-            <div className="flex flex-col gap-4 transform translate-y-0">
+            {/* Col 2 - Isaac */}
+            <div className="flex flex-col gap-3 sm:gap-4 transform translate-y-10 sm:translate-y-8">
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+                <img src="/isaac.jpg" alt="Isaac Darko Asante" className="w-full h-full object-cover scale-[1.48]" />
               </div>
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
             </div>
 
-            {/* Col 4 */}
-            <div className="flex flex-col gap-4 transform translate-y-6">
+            {/* Col 3 - Dennis */}
+            <div className="flex flex-col gap-3 sm:gap-4 transform translate-y-0">
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+                <img src="/dennis.jpg" alt="Dennis Asiedu" className="w-full h-full object-cover scale-[1.3] object-[38%_center]" />
               </div>
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                 <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
             </div>
 
+            {/* Col 4 */}
+            <div className="hidden sm:flex flex-col gap-4 transform translate-y-6">
+              <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                <img src="https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+              </div>
+              <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                <img src="https://images.unsplash.com/photo-1531384441138-2736e62e0919?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+              </div>
+            </div>
+
             {/* Col 5 */}
             <div className="hidden sm:flex flex-col gap-4 transform translate-y-12">
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
             </div>
 
             {/* Col 6 */}
             <div className="hidden sm:flex flex-col gap-4 transform translate-y-2">
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1523825036634-aab3cce05919?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
             </div>
 
             {/* Col 7 */}
             <div className="hidden lg:flex flex-col gap-4 transform translate-y-8">
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1506803682981-6e718a9dd3ee?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1618151313441-bc79b11e5090?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
             </div>
 
             {/* Col 8 */}
             <div className="hidden lg:flex flex-col gap-4 transform translate-y-0">
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1530268729831-4b0b9e170218?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <img src="https://images.unsplash.com/photo-1463453091185-61582044d556?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
             </div>
           </div>
@@ -1273,16 +1474,19 @@ export default function LandingPage() {
                     <img 
                       src={SUCCESS_STORIES[activeStoryIdx].image} 
                       alt={SUCCESS_STORIES[activeStoryIdx].name} 
-                      className="w-full h-full object-cover"
+                      className={`w-full h-full object-cover ${
+                        SUCCESS_STORIES[activeStoryIdx].image === "/gabriel.jpg" 
+                          ? "scale-[1.7] object-top" 
+                          : SUCCESS_STORIES[activeStoryIdx].image === "/dennis.jpg"
+                          ? "scale-[1.3] object-[38%_center]"
+                          : SUCCESS_STORIES[activeStoryIdx].image === "/isaac.jpg"
+                          ? "scale-[1.48]"
+                          : ""
+                      }`}
                     />
                   </div>
                   <h4 className="font-bold text-white leading-tight">{SUCCESS_STORIES[activeStoryIdx].name}</h4>
-                  <p className="text-[11px] text-slate-400 mb-4">{SUCCESS_STORIES[activeStoryIdx].role}</p>
-                  
-                  {/* Highlight Metric */}
-                  <span className="bg-orange-500/10 text-orange-400 border border-orange-500/20 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider">
-                    {SUCCESS_STORIES[activeStoryIdx].metric}
-                  </span>
+                  <p className="text-[11px] text-slate-400 font-medium">{SUCCESS_STORIES[activeStoryIdx].role}</p>
                 </div>
 
                 {/* Right Side: Testimony Quote */}
@@ -1459,6 +1663,317 @@ export default function LandingPage() {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* MY TICKETS MODAL */}
+      {showMyTicketsModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-xs">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-2xl w-full text-slate-900 shadow-2xl relative animate-in zoom-in-95 duration-200 my-8 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600">
+                  <Ticket className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900">My Ticket Passes</h3>
+                  <p className="text-slate-500 text-xs">Access your active tickets and show entry QR codes</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowMyTicketsModal(false)}
+                className="text-slate-400 hover:text-slate-700 p-2 rounded-lg hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {loadingTickets ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 text-orange-500 animate-spin mb-3" />
+                <p className="text-slate-500 text-sm font-medium">Loading your ticket passes...</p>
+              </div>
+            ) : myTickets.length === 0 ? (
+              <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-8 text-center flex flex-col items-center">
+                <Ticket className="w-12 h-12 text-slate-400 mb-3" />
+                <h4 className="text-lg font-bold text-slate-900 mb-1">No Tickets Found</h4>
+                <p className="text-slate-500 text-xs mb-6 max-w-sm">You haven't purchased any tickets yet. Browse events on the home page and book your pass!</p>
+                <button 
+                  onClick={() => {
+                    setShowMyTicketsModal(false);
+                    setTimeout(() => {
+                      const el = document.getElementById("events");
+                      if (el) {
+                        el.scrollIntoView({ behavior: "smooth" });
+                      }
+                    }, 100);
+                  }}
+                  className="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-full shadow-lg shadow-orange-500/25 transition-all cursor-pointer"
+                >
+                  Explore Events
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {myTickets.map((ticket) => {
+                  const eventDate = new Date(ticket.event?.date || ticket.createdAt);
+                  const formattedDate = !isNaN(eventDate.getTime()) 
+                    ? eventDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                    : "Upcoming";
+
+                  return (
+                    <div 
+                      key={ticket.id}
+                      className="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex flex-col justify-between hover:border-orange-300 transition-all group shadow-sm"
+                    >
+                      <div>
+                        <div className="flex items-start justify-between mb-3">
+                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-orange-100/70 border border-orange-200 text-orange-700 uppercase tracking-wide">
+                            {ticket.status || "CONFIRMED"}
+                          </span>
+                          <Ticket className="w-4 h-4 text-orange-500" />
+                        </div>
+                        <h4 className="font-bold text-slate-900 text-base line-clamp-1 mb-1">{ticket.event?.title || "Event Pass"}</h4>
+                        <div className="space-y-1 text-xs text-slate-600 mb-4">
+                          <p className="flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                            {formattedDate}
+                          </p>
+                          <p className="flex items-center gap-1.5">
+                            <MapPin className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                            <span className="line-clamp-1">{ticket.event?.location || "Venue"}</span>
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="pt-3 border-t border-slate-200/80 flex items-center justify-between">
+                        <span className="text-[10px] font-mono text-slate-400 font-medium">ID: {ticket.id?.substring(0, 8).toUpperCase()}</span>
+                        <button 
+                          onClick={() => setShowTicketQrModal(ticket.qrCode || ticket.id)}
+                          className="bg-slate-900 hover:bg-orange-500 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs transition-colors flex items-center gap-1.5 shadow-sm"
+                        >
+                          <QrCode className="w-3.5 h-3.5" /> View QR Pass
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* QR MODAL FOR MY TICKETS */}
+      {showTicketQrModal && (
+        <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 text-slate-900 rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl relative animate-in zoom-in-95 duration-200">
+            <h3 className="text-xl font-bold text-slate-900 mb-1">Your Entry Ticket</h3>
+            <p className="text-slate-500 text-xs mb-6">Present this QR code at the event check-in counter</p>
+
+            <div id="my-ticket-qr-box" className="w-48 h-48 bg-slate-50 mx-auto rounded-2xl flex flex-col items-center justify-center border border-slate-200 p-4 mb-4 shadow-inner">
+              <QRCodeSVG value={showTicketQrModal} size={160} />
+            </div>
+
+            <p className="text-xs font-mono font-bold text-slate-700 mb-4 bg-slate-100 py-2 rounded-xl border border-slate-200 truncate px-3">
+              {showTicketQrModal}
+            </p>
+
+            <div className="flex gap-2.5 mb-3">
+              <button 
+                onClick={() => {
+                  const svg = document.querySelector("#my-ticket-qr-box svg");
+                  if (svg) {
+                    try {
+                      const svgData = new XMLSerializer().serializeToString(svg);
+                      const canvas = document.createElement("canvas");
+                      const ctx = canvas.getContext("2d");
+                      const img = new window.Image();
+                      img.onload = () => {
+                        canvas.width = 400;
+                        canvas.height = 400;
+                        if (ctx) {
+                          ctx.fillStyle = "#ffffff";
+                          ctx.fillRect(0, 0, canvas.width, canvas.height);
+                          ctx.drawImage(img, 50, 50, 300, 300);
+                        }
+                        const a = document.createElement("a");
+                        a.download = `TickeX-Pass-${showTicketQrModal.substring(0, 8)}.png`;
+                        a.href = canvas.toDataURL("image/png");
+                        a.click();
+                      };
+                      img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+                    } catch (e) {
+                      window.print();
+                    }
+                  }
+                }}
+                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-1.5 shadow-md shadow-orange-500/20"
+              >
+                Download
+              </button>
+              <button 
+                onClick={() => setShowTicketQrModal(null)}
+                className="px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors text-xs"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CREATE EVENT MODAL FOR ORGANIZERS */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 text-slate-900 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative animate-in zoom-in-95 duration-200 my-8 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-2xl font-extrabold text-slate-900">Create New Event</h3>
+              <button 
+                onClick={() => setShowCreateModal(false)}
+                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-slate-500 text-xs mb-6">Publish a new live event listing directly to TickeX</p>
+
+            {createEventError && (
+              <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
+                {createEventError}
+              </div>
+            )}
+
+            <form onSubmit={handleCreateEvent} className="space-y-4 text-left">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Event Title</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Accra Synthwave Festival"
+                  value={createFormData.title}
+                  onChange={(e) => setCreateFormData({ ...createFormData, title: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 text-sm transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Description</label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="Describe your event atmosphere, performers, schedule..."
+                  value={createFormData.description}
+                  onChange={(e) => setCreateFormData({ ...createFormData, description: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 text-sm transition-colors"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Category</label>
+                  <select
+                    value={createFormData.category}
+                    onChange={(e) => setCreateFormData({ ...createFormData, category: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-orange-500 text-sm transition-colors"
+                  >
+                    <option value="Music">Music</option>
+                    <option value="Tech">Tech</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Food">Food</option>
+                    <option value="Comedy">Comedy</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Ticket Price (GH₵)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    required
+                    value={createFormData.price}
+                    onChange={(e) => setCreateFormData({ ...createFormData, price: Number(e.target.value) })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-orange-500 text-sm transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Date & Time</label>
+                  <input
+                    type="datetime-local"
+                    required
+                    value={createFormData.date}
+                    onChange={(e) => setCreateFormData({ ...createFormData, date: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-orange-500 text-sm transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Venue Location</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Labadi Beach Hotel, Accra"
+                    value={createFormData.location}
+                    onChange={(e) => setCreateFormData({ ...createFormData, location: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 text-sm transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Cover Image URL</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const presets: Record<string, string> = {
+                        Music: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=800",
+                        Tech: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800",
+                        Sports: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800",
+                        Food: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=800",
+                        Comedy: "https://images.unsplash.com/photo-1585647347483-22b66260dfff?auto=format&fit=crop&q=80&w=800",
+                      };
+                      setCreateFormData({
+                        ...createFormData,
+                        image: presets[createFormData.category] || presets.Music,
+                      });
+                    }}
+                    className="text-[10px] font-bold text-orange-600 hover:text-orange-700"
+                  >
+                    Autofill preset
+                  </button>
+                </div>
+                <input
+                  type="url"
+                  placeholder="https://images.unsplash.com/..."
+                  value={createFormData.image}
+                  onChange={(e) => setCreateFormData({ ...createFormData, image: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 text-sm transition-colors"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-xl text-sm transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creatingEvent}
+                  className="w-1/2 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400 text-white font-bold py-3.5 rounded-xl text-sm shadow-md transition-colors flex items-center justify-center gap-2"
+                >
+                  {creatingEvent && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {creatingEvent ? "Creating..." : "Publish Event"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

@@ -1,11 +1,20 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class TicketsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mailService: MailService,
+  ) {}
 
   async purchaseTicket(userId: string, eventId: string, reference?: string) {
+    // Fetch buyer details
+    const buyer = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
     // 1. Check if event exists
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
@@ -14,6 +23,8 @@ export class TicketsService {
     if (!event) {
       throw new NotFoundException('Event not found');
     }
+
+    let paystackCustomerEmail: string | undefined;
 
     // 2. Paystack verification for paid events
     if (event.price > 0) {
@@ -64,6 +75,8 @@ export class TicketsService {
         if (paidCurrency !== 'GHS') {
           throw new BadRequestException('Invalid payment currency. Expected GHS');
         }
+
+        paystackCustomerEmail = verification.data?.customer?.email;
       } catch (err: any) {
         if (err instanceof BadRequestException) throw err;
         throw new BadRequestException('Error validating payment with Paystack: ' + err.message);
@@ -82,6 +95,37 @@ export class TicketsService {
         event: true,
       },
     });
+
+    // 4. Send Email Ticket Pass Confirmation
+    const recipientEmails = new Set<string>();
+    if (paystackCustomerEmail) recipientEmails.add(paystackCustomerEmail);
+    if (buyer?.email) recipientEmails.add(buyer.email);
+
+    const formattedDate = new Date(event.date).toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+
+    for (const email of recipientEmails) {
+      try {
+        console.log(`🚀 Dispatching TickeX Ticket Pass Email to: ${email}`);
+        await this.mailService.sendTicketConfirmationEmail({
+          toEmail: email,
+          userName: buyer?.name || 'Valued Attendee',
+          eventTitle: event.title,
+          eventDate: formattedDate,
+          eventLocation: event.location,
+          ticketPrice: event.price > 0 ? `GH₵ ${event.price}` : 'Free Access',
+          ticketId: ticket.id,
+          qrCode: ticket.qrCode,
+          eventId: event.id,
+        });
+      } catch (err) {
+        console.error(`Error sending ticket confirmation email to ${email}:`, err);
+      }
+    }
 
     return ticket;
   }

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Calendar, MapPin, Tag, User, CheckCircle2, Loader2, CreditCard, Ticket } from "lucide-react";
 import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
@@ -19,9 +19,19 @@ type EventType = {
 };
 
 export default function EventDetailsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#030014] text-white flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-orange-500" /></div>}>
+      <EventDetailsContent />
+    </Suspense>
+  );
+}
+
+function EventDetailsContent() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const id = params?.id as string;
+  const targetTicketId = searchParams?.get("ticketId");
 
   const [event, setEvent] = useState<EventType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,6 +43,36 @@ export default function EventDetailsPage() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [purchasedTicketId, setPurchasedTicketId] = useState<string | null>(null);
   const [purchasedTicket, setPurchasedTicket] = useState<any>(null);
+
+  const handleDownloadPng = () => {
+    const svgElement = document.querySelector("#printable-ticket svg");
+    if (!svgElement) {
+      window.print();
+      return;
+    }
+    try {
+      const svgData = new XMLSerializer().serializeToString(svgElement);
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const img = new window.Image();
+      img.onload = () => {
+        canvas.width = 400;
+        canvas.height = 400;
+        if (ctx) {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 50, 50, 300, 300);
+        }
+        const a = document.createElement("a");
+        a.download = `TickeX-Ticket-Pass-${purchasedTicketId ? purchasedTicketId.substring(0, 8) : "Download"}.png`;
+        a.href = canvas.toDataURL("image/png");
+        a.click();
+      };
+      img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+    } catch (e) {
+      window.print();
+    }
+  };
 
   // Load Paystack Script on component mount
   useEffect(() => {
@@ -69,7 +109,7 @@ export default function EventDetailsPage() {
     fetchEvent();
   }, [id]);
 
-  // Fetch existing ticket if already purchased
+  // Fetch existing ticket if already purchased or if ticketId parameter present in URL
   useEffect(() => {
     if (!id) return;
     const fetchExistingTicket = async () => {
@@ -81,10 +121,17 @@ export default function EventDetailsPage() {
         });
         if (res.ok) {
           const tickets = await res.json();
-          const existing = tickets.find((t: any) => t.eventId === id);
+          const existing = targetTicketId 
+            ? tickets.find((t: any) => t.id === targetTicketId || t.eventId === id)
+            : tickets.find((t: any) => t.eventId === id);
+          
           if (existing) {
             setPurchasedTicket(existing);
             setPurchasedTicketId(existing.id);
+            if (targetTicketId) {
+              setShowCheckout(true);
+              setPaymentStatus("success");
+            }
           }
         }
       } catch (err) {
@@ -92,7 +139,7 @@ export default function EventDetailsPage() {
       }
     };
     fetchExistingTicket();
-  }, [id]);
+  }, [id, targetTicketId]);
 
   const handleBuyClick = () => {
     const token = localStorage.getItem("tickex_token");
@@ -322,7 +369,9 @@ export default function EventDetailsPage() {
 
                   <CheckCircle2 className="w-12 h-12 text-emerald-500 mb-4 animate-in fade-in zoom-in print:hidden" />
                   <h4 className="text-xl font-bold text-white mb-2 print:hidden">Payment Successful!</h4>
-                  <p className="text-slate-400 text-sm mb-6 print:hidden">Your ticket pass has been generated successfully.</p>
+                  <p className="text-slate-300 text-sm mb-6 max-w-sm print:hidden">
+                    Your ticket pass has been generated! A confirmation email with your direct download link has been sent to your email.
+                  </p>
 
                   <div id="printable-ticket" className="bg-white text-slate-800 rounded-2xl w-full max-w-[300px] mx-auto shadow-lg overflow-hidden flex flex-col border border-slate-100 print:border-slate-200">
                     {/* Top Section */}
@@ -374,17 +423,17 @@ export default function EventDetailsPage() {
 
                   <div className="mt-6 flex flex-col sm:flex-row gap-3 w-full px-4 print:hidden">
                     <button
-                      onClick={() => window.print()}
-                      className="flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition-all text-sm flex items-center justify-center gap-2"
+                      onClick={handleDownloadPng}
+                      className="flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20"
                     >
-                      Download Ticket (PDF)
+                      Download
                     </button>
                     <button
                       onClick={() => {
                         setShowCheckout(false);
                         router.push("/");
                       }}
-                      className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-slate-300 font-bold rounded-xl border border-white/10 text-sm transition-all"
+                      className="py-3 px-6 bg-white/5 hover:bg-white/10 text-slate-300 font-bold rounded-xl border border-white/10 text-sm transition-all"
                     >
                       Close
                     </button>
@@ -392,8 +441,6 @@ export default function EventDetailsPage() {
                 </div>
               ) : (
                 <>
-
-
                   <div className="bg-slate-950 p-4 rounded-2xl mb-6 print:hidden">
                     <p className="text-slate-400 text-sm mb-1">Order Summary</p>
                     <p className="text-white font-bold mb-4 line-clamp-1">{event.title}</p>
