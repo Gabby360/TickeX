@@ -107,6 +107,7 @@ const EVENTS = [
     location: "Accra International Conference Centre",
     price: "GH₵150",
     image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=800",
+    organizer: "Agblevor Gabriel",
     featured: true,
   },
   {
@@ -117,6 +118,7 @@ const EVENTS = [
     location: "Labadi Beach Hotel, Accra",
     price: "Free",
     image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800",
+    organizer: "Agblevor Gabriel",
     featured: true,
   },
   {
@@ -127,6 +129,7 @@ const EVENTS = [
     location: "Baba Yara Sports Stadium, Kumasi",
     price: "GH₵50",
     image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800",
+    organizer: "Agblevor Gabriel",
     featured: true,
   },
   {
@@ -137,6 +140,7 @@ const EVENTS = [
     location: "Efua Sutherland Drama Studio, Accra",
     price: "GH₵80",
     image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=800",
+    organizer: "Agblevor Gabriel",
     featured: false,
   },
   {
@@ -147,6 +151,7 @@ const EVENTS = [
     location: "National Theatre, Accra",
     price: "GH₵100",
     image: "https://images.unsplash.com/photo-1585647347483-22b66260dfff?auto=format&fit=crop&q=80&w=800",
+    organizer: "Agblevor Gabriel",
     featured: false,
   },
   {
@@ -157,6 +162,7 @@ const EVENTS = [
     location: "Alliance Française, Accra",
     price: "GH₵120",
     image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=800",
+    organizer: "Agblevor Gabriel",
     featured: false,
   },
   {
