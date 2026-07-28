@@ -417,12 +417,12 @@ const FALLBACK_EVENTS: Record<string, any> = {
           return;
         }
 
-        // Safe fallback execution
-        onPaystackSuccess({ reference: txRef });
+        setCheckoutError("Payment gateway is initializing. Please try again in a moment.");
+        setPaymentStatus("idle");
       } catch (err: any) {
         console.error("Paystack launch error:", err);
-        // Fallback to seamless pass generation if Paystack popup fails on mobile
-        onPaystackSuccess({ reference: txRef });
+        setCheckoutError("Could not open Paystack payment window. Please try again.");
+        setPaymentStatus("idle");
       }
     };
 
@@ -430,15 +430,16 @@ const FALLBACK_EVENTS: Record<string, any> = {
     if (typeof window !== "undefined" && (window as any).PaystackPop) {
       triggerPaystack();
     } else {
-      // Dynamically load Paystack script if not yet ready
+      setPaymentStatus("processing");
       const script = document.createElement("script");
       script.src = "https://js.paystack.co/v1/inline.js";
       script.onload = () => {
+        setPaymentStatus("idle");
         triggerPaystack();
       };
       script.onerror = () => {
-        // Fallback purchase if script cannot load
-        triggerPaystack();
+        setPaymentStatus("idle");
+        setCheckoutError("Failed to load Paystack payment gateway. Please check your internet connection.");
       };
       document.body.appendChild(script);
     }
