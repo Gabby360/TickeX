@@ -51,7 +51,7 @@ export default function TutorialsPage() {
 
         <div className="space-y-8 max-w-4xl mx-auto">
           {/* Guide 1 */}
-          <div className="bg-slate-900/90 border border-white/10 rounded-3xl p-8 shadow-xl backdrop-blur-xl flex flex-col md:flex-row gap-6 items-start">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl flex flex-col md:flex-row gap-6 items-start">
             <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
               <Ticket className="w-6 h-6" />
             </div>
@@ -67,7 +67,7 @@ export default function TutorialsPage() {
           </div>
 
           {/* Guide 2 */}
-          <div className="bg-slate-900/90 border border-white/10 rounded-3xl p-8 shadow-xl backdrop-blur-xl flex flex-col md:flex-row gap-6 items-start">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl flex flex-col md:flex-row gap-6 items-start">
             <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
               <Users className="w-6 h-6" />
             </div>
@@ -83,7 +83,7 @@ export default function TutorialsPage() {
           </div>
 
           {/* Guide 3 */}
-          <div className="bg-slate-900/90 border border-white/10 rounded-3xl p-8 shadow-xl backdrop-blur-xl flex flex-col md:flex-row gap-6 items-start">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl flex flex-col md:flex-row gap-6 items-start">
             <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
               <QrCode className="w-6 h-6" />
             </div>

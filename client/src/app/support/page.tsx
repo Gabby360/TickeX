@@ -74,7 +74,7 @@ export default function SupportPage() {
           {FAQS.map((faq, idx) => (
             <div 
               key={idx}
-              className="bg-slate-900/90 border border-white/10 rounded-2xl overflow-hidden shadow-lg backdrop-blur-xl transition-all"
+              className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg transition-all"
             >
               <button
                 onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
@@ -87,7 +87,7 @@ export default function SupportPage() {
                 <ChevronDown className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${openFaq === idx ? 'rotate-180 text-orange-400' : ''}`} />
               </button>
               {openFaq === idx && (
-                <div className="px-6 pb-6 pt-2 text-slate-300 text-sm leading-relaxed border-t border-white/5 font-light">
+                <div className="px-6 pb-6 pt-2 text-slate-300 text-sm leading-relaxed border-t border-slate-800/80 font-light">
                   {faq.a}
                 </div>
               )}
@@ -96,7 +96,7 @@ export default function SupportPage() {
         </div>
 
         {/* Support Callout */}
-        <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-8 text-center backdrop-blur-xl">
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center">
           <h3 className="text-2xl font-bold text-white mb-2">Still need help?</h3>
           <p className="text-slate-400 text-sm mb-6 max-w-md mx-auto">
             Our support team is available 7 days a week to assist attendees and event organizers.

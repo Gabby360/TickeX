@@ -51,7 +51,7 @@ export default function AboutPage() {
 
         {/* Core Pillars */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-          <div className="bg-slate-900/90 border border-white/10 rounded-3xl p-8 shadow-xl backdrop-blur-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
             <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center mb-6">
               <Zap className="w-6 h-6" />
             </div>
@@ -61,7 +61,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="bg-slate-900/90 border border-white/10 rounded-3xl p-8 shadow-xl backdrop-blur-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
             <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mb-6">
               <ShieldCheck className="w-6 h-6" />
             </div>
@@ -71,7 +71,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="bg-slate-900/90 border border-white/10 rounded-3xl p-8 shadow-xl backdrop-blur-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
             <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-6">
               <Users className="w-6 h-6" />
             </div>
@@ -83,7 +83,7 @@ export default function AboutPage() {
         </div>
 
         {/* Founders / Leadership Team */}
-        <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-8 sm:p-12 shadow-2xl">
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-2xl">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-center mb-2">Leadership Team</h2>
           <p className="text-slate-400 text-center text-sm mb-12 max-w-md mx-auto">
             Driven by passion for technology, live music, and event infrastructure

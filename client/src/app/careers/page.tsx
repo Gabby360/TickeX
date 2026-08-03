@@ -48,7 +48,7 @@ export default function CareersPage() {
         </p>
 
         {/* No Openings Card */}
-        <div className="bg-slate-900/90 border border-white/10 rounded-3xl p-8 sm:p-12 shadow-2xl backdrop-blur-xl max-w-2xl mx-auto">
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-2xl max-w-2xl mx-auto">
           <div className="w-16 h-16 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center mx-auto mb-6">
             <Briefcase className="w-8 h-8" />
           </div>

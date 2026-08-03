@@ -51,7 +51,7 @@ export default function IntegrationsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Integration 1 */}
-          <div className="bg-slate-900/90 border border-white/10 rounded-3xl p-8 shadow-xl backdrop-blur-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
             <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mb-6">
               <CreditCard className="w-6 h-6" />
             </div>
@@ -65,7 +65,7 @@ export default function IntegrationsPage() {
           </div>
 
           {/* Integration 2 */}
-          <div className="bg-slate-900/90 border border-white/10 rounded-3xl p-8 shadow-xl backdrop-blur-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
             <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center mb-6">
               <QrCode className="w-6 h-6" />
             </div>
@@ -79,7 +79,7 @@ export default function IntegrationsPage() {
           </div>
 
           {/* Integration 3 */}
-          <div className="bg-slate-900/90 border border-white/10 rounded-3xl p-8 shadow-xl backdrop-blur-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
             <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-6">
               <Ticket className="w-6 h-6" />
             </div>
@@ -93,7 +93,7 @@ export default function IntegrationsPage() {
           </div>
 
           {/* Integration 4 */}
-          <div className="bg-slate-900/90 border border-white/10 rounded-3xl p-8 shadow-xl backdrop-blur-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
             <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mb-6">
               <Mail className="w-6 h-6" />
             </div>

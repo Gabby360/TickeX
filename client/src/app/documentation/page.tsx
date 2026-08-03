@@ -51,7 +51,7 @@ export default function DocumentationPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {/* Quick Start Guide */}
-          <div className="bg-slate-900/90 border border-white/10 rounded-3xl p-8 shadow-xl backdrop-blur-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
             <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center mb-6">
               <BookOpen className="w-6 h-6" />
             </div>
@@ -71,7 +71,7 @@ Authorization: Bearer <TOKEN>
           </div>
 
           {/* QR Validation Docs */}
-          <div className="bg-slate-900/90 border border-white/10 rounded-3xl p-8 shadow-xl backdrop-blur-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
             <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mb-6">
               <QrCode className="w-6 h-6" />
             </div>
@@ -91,7 +91,7 @@ Authorization: Bearer <TOKEN>
         </div>
 
         {/* Security & Authentication */}
-        <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-8 sm:p-12 shadow-2xl">
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-2xl">
           <div className="flex items-center gap-3 mb-6">
             <ShieldCheck className="w-8 h-8 text-emerald-400" />
             <h2 className="text-2xl font-bold">Authentication & Security</h2>
