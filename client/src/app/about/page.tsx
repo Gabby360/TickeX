@@ -48,7 +48,7 @@ export default function AboutPage() {
         </div>
 
         {/* Core Pillars */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
             <Zap className="w-8 h-8 text-orange-400 mb-6" />
             <h3 className="text-xl font-bold mb-3">Sub-Second Scanning</h3>
@@ -71,40 +71,6 @@ export default function AboutPage() {
             <p className="text-slate-400 text-sm leading-relaxed font-light">
               Event organizers receive instant ticket sale settlements directly into Mobile Money and local bank accounts via Paystack.
             </p>
-          </div>
-        </div>
-
-        {/* Founders / Leadership Team */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-2xl">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-center mb-2">Leadership Team</h2>
-          <p className="text-slate-400 text-center text-sm mb-12 max-w-md mx-auto">
-            Driven by passion for technology, live music, and event infrastructure
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            <div className="flex flex-col items-center text-center">
-              <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-orange-500 shadow-xl shadow-orange-500/20 mb-4">
-                <img src="/gabriel.jpg" alt="Agblevor Gabriel" className="w-full h-full object-cover scale-[1.7] object-top" />
-              </div>
-              <h4 className="font-bold text-lg text-white">Agblevor Gabriel</h4>
-              <span className="text-xs text-orange-400 font-semibold mb-2">Founder & Core Engineering</span>
-            </div>
-
-            <div className="flex flex-col items-center text-center">
-              <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-orange-500 shadow-xl shadow-orange-500/20 mb-4">
-                <img src="/isaac.jpg" alt="Isaac Darko Asante" className="w-full h-full object-cover scale-[1.48]" />
-              </div>
-              <h4 className="font-bold text-lg text-white">Isaac Darko Asante</h4>
-              <span className="text-xs text-orange-400 font-semibold mb-2">Co-Founder & Tech Leadership</span>
-            </div>
-
-            <div className="flex flex-col items-center text-center">
-              <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-orange-500 shadow-xl shadow-orange-500/20 mb-4">
-                <img src="/dennis.jpg" alt="Dennis Asiedu" className="w-full h-full object-cover scale-[1.3] object-[38%_center]" />
-              </div>
-              <h4 className="font-bold text-lg text-white">Dennis Asiedu</h4>
-              <span className="text-xs text-orange-400 font-semibold mb-2">Co-Founder & Ecosystem Builder</span>
-            </div>
           </div>
         </div>
       </main>
