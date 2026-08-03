@@ -617,7 +617,7 @@ export default function LandingPage() {
   });
 
   return (
-    <div className="w-full bg-[#f8fafc] text-slate-900 font-sans min-h-screen">
+    <div className="w-full bg-[#f8fafc] text-slate-900 font-sans min-h-screen overflow-x-hidden">
       
       {/* NAVIGATION */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#030014] border-b border-slate-800 transition-all duration-300">
@@ -1258,7 +1258,7 @@ export default function LandingPage() {
       {/* REDESIGNED TESTIMONIALS SECTION (Pinterest Style) */}
       <section id="organizers" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden relative bg-white rounded-[2.5rem] border border-slate-100 shadow-sm mt-12 mb-12">
         {/* Top staggered portrait grid */}
-        <div className="relative w-full overflow-visible mb-16 pt-8 pb-12">
+        <div className="relative w-full overflow-hidden mb-16 pt-8 pb-12">
           {/* Subtle background details */}
           <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none" />
           
@@ -1278,7 +1278,7 @@ export default function LandingPage() {
             <svg className="absolute bottom-6 right-12 w-[24rem] h-[24rem] text-[#020617] transform -rotate-12" fill="none" stroke="currentColor" strokeWidth="0.8" viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M13 5v2M13 17v2M13 11v2" /></svg>
           </div>
           
-          <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-8 gap-2 sm:gap-4 max-w-6xl mx-auto justify-center">
+          <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-8 gap-2 sm:gap-4 max-w-6xl mx-auto justify-center px-2 sm:px-4">
             {/* Col 1 - Gabriel */}
             <div className="flex flex-col gap-2.5 sm:gap-4 transform translate-y-2">
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
@@ -1319,7 +1319,7 @@ export default function LandingPage() {
             </div>
 
             {/* Col 4 */}
-            <div className="flex flex-col gap-2.5 sm:gap-4 transform translate-y-4">
+            <div className="hidden sm:flex flex-col gap-2.5 sm:gap-4 transform translate-y-4">
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                 <img src="https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&q=80&w=300" alt="user" className="w-full h-full object-cover" />
               </div>
