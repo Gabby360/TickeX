@@ -24,6 +24,7 @@ import {
   Plus
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
+import { downloadTicketPassImage } from "@/utils/ticketGenerator";
 
 const getApiUrl = (path: string) => {
   const envUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
@@ -815,12 +816,12 @@ export default function LandingPage() {
 
 
               {/* Title with looping typewriter animation */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight min-h-[120px] sm:min-h-[150px] md:min-h-[180px]">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight min-h-[90px] sm:min-h-[140px] md:min-h-[180px]">
                 <SequentialTypewriter />
               </h1>
 
               {/* Subheading */}
-              <p className="text-lg text-slate-300 mb-8 leading-relaxed font-light max-w-xl">
+              <p className="text-base sm:text-lg text-slate-300 mb-8 leading-relaxed font-light max-w-xl">
                 Host your next concert, conference, or workshop with TickeX. Sell tickets directly online, accept instant payments via Paystack, and validate entries securely in under a second using our built-in QR ticket scanner.
               </p>
 
@@ -861,8 +862,8 @@ export default function LandingPage() {
             </div>
 
             {/* Right Column: Realistic Digital Ticket Mockup */}
-            <div className="lg:col-span-5 flex justify-center lg:justify-end">
-              <div className="relative w-full max-w-[400px] bg-gradient-to-b from-[#0b021a] to-[#1c0835] border border-[#2a1353] rounded-3xl p-5 shadow-2xl overflow-hidden transform -rotate-3 hover:rotate-0 hover:scale-[1.03] transition-all duration-300">
+            <div className="lg:col-span-5 flex justify-center lg:justify-end w-full px-2 sm:px-0">
+              <div className="relative w-full max-w-[340px] xs:max-w-[380px] sm:max-w-[400px] bg-gradient-to-b from-[#0b021a] to-[#1c0835] border border-[#2a1353] rounded-3xl p-4 sm:p-5 shadow-2xl overflow-hidden transform rotate-0 sm:-rotate-3 hover:rotate-0 hover:scale-[1.02] transition-all duration-300">
                 {/* Event Cover Photo Stub */}
                 <div className="relative h-44 rounded-2xl overflow-hidden mb-4">
                   <img 
@@ -1285,7 +1286,7 @@ export default function LandingPage() {
             <svg className="absolute bottom-6 right-12 w-[24rem] h-[24rem] text-[#020617] transform -rotate-12" fill="none" stroke="currentColor" strokeWidth="0.8" viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M13 5v2M13 17v2M13 11v2" /></svg>
           </div>
           
-          <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2.5 sm:gap-4 max-w-6xl mx-auto justify-center">
+          <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-8 gap-2 sm:gap-4 max-w-6xl mx-auto justify-center">
             {/* Col 1 - Gabriel */}
             <div className="flex flex-col gap-2.5 sm:gap-4 transform translate-y-2">
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
@@ -1831,31 +1832,36 @@ export default function LandingPage() {
 
             <div className="flex gap-2.5 mb-3">
               <button 
-                onClick={() => {
-                  const svg = document.querySelector("#my-ticket-qr-box svg");
-                  if (svg) {
-                    try {
-                      const svgData = new XMLSerializer().serializeToString(svg);
-                      const canvas = document.createElement("canvas");
-                      const ctx = canvas.getContext("2d");
-                      const img = new window.Image();
-                      img.onload = () => {
-                        canvas.width = 400;
-                        canvas.height = 400;
-                        if (ctx) {
-                          ctx.fillStyle = "#ffffff";
-                          ctx.fillRect(0, 0, canvas.width, canvas.height);
-                          ctx.drawImage(img, 50, 50, 300, 300);
-                        }
-                        const a = document.createElement("a");
-                        a.download = `TickeX-Pass-${showTicketQrModal.substring(0, 8)}.png`;
-                        a.href = canvas.toDataURL("image/png");
-                        a.click();
-                      };
-                      img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
-                    } catch (e) {
-                      window.print();
-                    }
+                onClick={async () => {
+                  const svg = document.querySelector("#my-ticket-qr-box svg") as SVGElement | null;
+                  const targetTicket = myTickets.find(t => t.qrCode === showTicketQrModal || t.id === showTicketQrModal);
+                  
+                  const eventDate = targetTicket?.event?.date ? new Date(targetTicket.event.date) : null;
+                  const formattedDateStr = eventDate && !isNaN(eventDate.getTime()) 
+                    ? eventDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) 
+                    : "";
+                  const formattedTimeStr = eventDate && !isNaN(eventDate.getTime())
+                    ? eventDate.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+                    : "";
+
+                  const userStr = typeof window !== "undefined" ? localStorage.getItem("tickex_user") : null;
+                  const currentUser = userStr ? JSON.parse(userStr) : null;
+
+                  try {
+                    await downloadTicketPassImage({
+                      ticketId: targetTicket?.id || showTicketQrModal || "PASS",
+                      eventTitle: targetTicket?.event?.title || "TickeX Event Pass",
+                      eventCategory: targetTicket?.event?.category || "Pass",
+                      eventDate: formattedDateStr,
+                      eventTime: formattedTimeStr,
+                      eventLocation: targetTicket?.event?.location || "Accra, Ghana",
+                      userName: targetTicket?.userName || currentUser?.name || "Valued Guest",
+                      userEmail: targetTicket?.userEmail || currentUser?.email || "",
+                      qrCodeValue: showTicketQrModal || "",
+                      svgElement: svg,
+                    });
+                  } catch (e) {
+                    window.print();
                   }
                 }}
                 className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-1.5 shadow-md shadow-orange-500/20"

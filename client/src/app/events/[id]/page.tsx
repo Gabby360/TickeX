@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Calendar, MapPin, Tag, User, CheckCircle2, Loader2, CreditCard, Ticket } from "lucide-react";
 import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
+import { downloadTicketPassImage } from "@/utils/ticketGenerator";
 
 type EventType = {
   id: string;
@@ -57,31 +58,32 @@ function EventDetailsContent() {
   const [purchasedTicketId, setPurchasedTicketId] = useState<string | null>(null);
   const [purchasedTicket, setPurchasedTicket] = useState<any>(null);
 
-  const handleDownloadPng = () => {
-    const svgElement = document.querySelector("#printable-ticket svg");
-    if (!svgElement) {
-      window.print();
-      return;
-    }
+  const handleDownloadPng = async () => {
+    const svgElement = document.querySelector("#printable-ticket svg") as SVGElement | null;
+    const dateObj = event?.date ? new Date(event.date) : null;
+    const formattedDateStr = dateObj && !isNaN(dateObj.getTime())
+      ? dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+      : "";
+    const formattedTimeStr = dateObj && !isNaN(dateObj.getTime())
+      ? dateObj.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+      : "";
+
+    const userStr = typeof window !== "undefined" ? localStorage.getItem("tickex_user") : null;
+    const currentUser = userStr ? JSON.parse(userStr) : null;
+
     try {
-      const svgData = new XMLSerializer().serializeToString(svgElement);
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      const img = new window.Image();
-      img.onload = () => {
-        canvas.width = 400;
-        canvas.height = 400;
-        if (ctx) {
-          ctx.fillStyle = "#ffffff";
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 50, 50, 300, 300);
-        }
-        const a = document.createElement("a");
-        a.download = `TickeX-Ticket-Pass-${purchasedTicketId ? purchasedTicketId.substring(0, 8) : "Download"}.png`;
-        a.href = canvas.toDataURL("image/png");
-        a.click();
-      };
-      img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+      await downloadTicketPassImage({
+        ticketId: purchasedTicket?.id || purchasedTicketId || "PASS-TICKEX",
+        eventTitle: event?.title || "Event Ticket Pass",
+        eventCategory: event?.category || "Pass",
+        eventDate: formattedDateStr,
+        eventTime: formattedTimeStr,
+        eventLocation: event?.location || "Accra, Ghana",
+        userName: purchasedTicket?.userName || currentUser?.name || "Valued Guest",
+        userEmail: purchasedTicket?.userEmail || currentUser?.email || "",
+        qrCodeValue: purchasedTicket?.qrCode || purchasedTicketId || "",
+        svgElement: svgElement,
+      });
     } catch (e) {
       window.print();
     }
@@ -733,20 +735,20 @@ const FALLBACK_EVENTS: Record<string, any> = {
         {/* Dark overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
         
-        <div className="absolute bottom-0 left-0 w-full p-6 md:p-12 lg:px-24">
-          <div className="flex items-center gap-3 mb-4">
+        <div className="absolute bottom-0 left-0 w-full p-4 sm:p-6 md:p-12 lg:px-24">
+          <div className="flex items-center gap-3 mb-3 sm:mb-4">
             <span className="bg-indigo-600 text-white text-xs font-bold uppercase tracking-wider py-1 px-3 rounded-full">
               {event.category}
             </span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-6xl font-extrabold text-white mb-2 sm:mb-4 leading-tight">
             {event.title}
           </h1>
         </div>
       </div>
 
       {/* Content Section */}
-      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-24 py-8 sm:py-12 grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12">
         
         {/* Main Details */}
         <div className="lg:col-span-2 space-y-8">
