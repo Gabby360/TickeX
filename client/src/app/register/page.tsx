@@ -86,10 +86,10 @@ export default function RegisterPage() {
         
         {/* Back Link */}
         <button 
-          onClick={() => router.push("/")}
+          onClick={() => router.back()}
           className="inline-flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors text-sm mb-8 group"
         >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" /> Back to home
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" /> Back
         </button>
 
         {/* Logo and Header */}

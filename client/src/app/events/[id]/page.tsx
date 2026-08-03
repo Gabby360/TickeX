@@ -715,7 +715,7 @@ const FALLBACK_EVENTS: Record<string, any> = {
         {/* Header / Back Button */}
         <div className="absolute top-0 left-0 w-full p-6 z-10 flex items-center justify-between">
         <button
-          onClick={() => router.push("/")}
+          onClick={() => router.back()}
           className="flex items-center gap-2 px-4 py-2 bg-slate-900/80 hover:bg-slate-800 rounded-full text-sm font-medium transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />

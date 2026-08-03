@@ -18,11 +18,11 @@ export default function DocumentationPage() {
       {/* Header */}
       <header className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-8 flex items-center justify-between">
         <button
-          onClick={() => router.push("/")}
+          onClick={() => router.back()}
           className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white rounded-full text-sm font-medium transition-all border border-white/10"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Home</span>
+          <span>Back</span>
         </button>
 
         <div className="flex items-center gap-2">
