@@ -26,9 +26,7 @@ export default function CareersPage() {
         </button>
 
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
-            <Ticket className="w-5 h-5 rotate-12" />
-          </div>
+          <Ticket className="w-7 h-7 text-orange-500 rotate-12" />
           <span className="text-xl font-bold tracking-tight text-white">
             Ticke<span className="text-orange-500">X</span>
           </span>
@@ -49,9 +47,7 @@ export default function CareersPage() {
 
         {/* No Openings Card */}
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-2xl max-w-2xl mx-auto">
-          <div className="w-16 h-16 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center mx-auto mb-6">
-            <Briefcase className="w-8 h-8" />
-          </div>
+          <Briefcase className="w-10 h-10 text-orange-400 mx-auto mb-6" />
 
           <h3 className="text-2xl font-bold text-white mb-3">No Open Positions At The Moment</h3>
           <p className="text-slate-400 text-sm sm:text-base leading-relaxed mb-8 font-light">

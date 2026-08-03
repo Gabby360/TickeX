@@ -67,9 +67,7 @@ export default function AdminLoginPage() {
         
         {/* Header Badge */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center p-3.5 bg-gradient-to-br from-orange-500 to-amber-500 rounded-2xl shadow-xl shadow-orange-500/25 mb-4 ring-1 ring-white/10">
-            <ShieldCheck className="w-8 h-8 text-white" />
-          </div>
+          <ShieldCheck className="w-10 h-10 text-orange-500 mx-auto mb-4" />
           <h1 className="text-3xl font-black tracking-tight text-white">Platform Command</h1>
           <p className="text-slate-400 text-sm mt-1.5 font-medium">
             Restricted Access Portal &bull; Ticke<span className="text-orange-500">X</span> Security
@@ -77,7 +75,7 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-slate-900/90 border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl ring-1 ring-white/5">
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
           
           {error && (
             <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-start gap-3 text-red-400 text-sm animate-in fade-in duration-200">

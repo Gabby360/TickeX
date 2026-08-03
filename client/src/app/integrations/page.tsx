@@ -26,9 +26,7 @@ export default function IntegrationsPage() {
         </button>
 
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
-            <Ticket className="w-5 h-5 rotate-12" />
-          </div>
+          <Ticket className="w-7 h-7 text-orange-500 rotate-12" />
           <span className="text-xl font-bold tracking-tight text-white">
             Ticke<span className="text-orange-500">X</span>
           </span>
@@ -52,9 +50,7 @@ export default function IntegrationsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Integration 1 */}
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mb-6">
-              <CreditCard className="w-6 h-6" />
-            </div>
+            <CreditCard className="w-8 h-8 text-indigo-400 mb-6" />
             <h3 className="text-2xl font-bold mb-3">Paystack Payment Gateway</h3>
             <p className="text-slate-400 text-sm leading-relaxed font-light mb-4">
               Accept Mobile Money (MTN, Telecel, AT) and Debit/Credit Cards seamlessly with real-time settlement into organizer bank accounts.
@@ -66,9 +62,7 @@ export default function IntegrationsPage() {
 
           {/* Integration 2 */}
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
-            <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center mb-6">
-              <QrCode className="w-6 h-6" />
-            </div>
+            <QrCode className="w-8 h-8 text-orange-400 mb-6" />
             <h3 className="text-2xl font-bold mb-3">Web-Based Mobile Scanner</h3>
             <p className="text-slate-400 text-sm leading-relaxed font-light mb-4">
               Uses HTML5 WebKit Camera APIs to scan QR codes instantly directly inside any mobile browser without installing third-party apps.
@@ -80,9 +74,7 @@ export default function IntegrationsPage() {
 
           {/* Integration 3 */}
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-6">
-              <Ticket className="w-6 h-6" />
-            </div>
+            <Ticket className="w-8 h-8 text-emerald-400 mb-6" />
             <h3 className="text-2xl font-bold mb-3">Retina Ticket Pass Generator</h3>
             <p className="text-slate-400 text-sm leading-relaxed font-light mb-4">
               Renders 800×1200 pixel digital ticket passes directly on HTML5 canvas with native Web Share API support for iOS Photos and Android Files.
@@ -94,9 +86,7 @@ export default function IntegrationsPage() {
 
           {/* Integration 4 */}
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
-            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mb-6">
-              <Mail className="w-6 h-6" />
-            </div>
+            <Mail className="w-8 h-8 text-purple-400 mb-6" />
             <h3 className="text-2xl font-bold mb-3">Nodemailer Dispatch Service</h3>
             <p className="text-slate-400 text-sm leading-relaxed font-light mb-4">
               Sends automated HTML confirmation emails with direct ticket pass links upon successful payment verification.

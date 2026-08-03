@@ -94,9 +94,7 @@ export default function RegisterPage() {
 
         {/* Logo and Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex w-12 h-12 rounded-xl bg-orange-500 items-center justify-center text-white shadow-lg shadow-orange-500/20 mb-4">
-            <Ticket className="w-7 h-7 rotate-12" />
-          </div>
+          <Ticket className="w-10 h-10 text-orange-500 rotate-12 mx-auto mb-4" />
           <h2 className="text-3xl font-extrabold tracking-tight">
             Create your account
           </h2>

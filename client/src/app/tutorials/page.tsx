@@ -26,9 +26,7 @@ export default function TutorialsPage() {
         </button>
 
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
-            <Ticket className="w-5 h-5 rotate-12" />
-          </div>
+          <Ticket className="w-7 h-7 text-orange-500 rotate-12" />
           <span className="text-xl font-bold tracking-tight text-white">
             Ticke<span className="text-orange-500">X</span>
           </span>
@@ -52,9 +50,7 @@ export default function TutorialsPage() {
         <div className="space-y-8 max-w-4xl mx-auto">
           {/* Guide 1 */}
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl flex flex-col md:flex-row gap-6 items-start">
-            <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
-              <Ticket className="w-6 h-6" />
-            </div>
+            <Ticket className="w-8 h-8 text-orange-400 shrink-0 mt-1" />
             <div>
               <h3 className="text-2xl font-bold mb-3">1. How to Purchase & Download Ticket Passes</h3>
               <ol className="space-y-2 text-slate-300 text-sm list-decimal list-inside font-light leading-relaxed">
@@ -68,9 +64,7 @@ export default function TutorialsPage() {
 
           {/* Guide 2 */}
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl flex flex-col md:flex-row gap-6 items-start">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
-              <Users className="w-6 h-6" />
-            </div>
+            <Users className="w-8 h-8 text-indigo-400 shrink-0 mt-1" />
             <div>
               <h3 className="text-2xl font-bold mb-3">2. How to Host & Publish a Live Event</h3>
               <ol className="space-y-2 text-slate-300 text-sm list-decimal list-inside font-light leading-relaxed">
@@ -84,9 +78,7 @@ export default function TutorialsPage() {
 
           {/* Guide 3 */}
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl flex flex-col md:flex-row gap-6 items-start">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-              <QrCode className="w-6 h-6" />
-            </div>
+            <QrCode className="w-8 h-8 text-emerald-400 shrink-0 mt-1" />
             <div>
               <h3 className="text-2xl font-bold mb-3">3. How Gate Scanning Works at Venue Entry</h3>
               <ol className="space-y-2 text-slate-300 text-sm list-decimal list-inside font-light leading-relaxed">

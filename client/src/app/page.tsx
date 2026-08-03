@@ -625,9 +625,7 @@ export default function LandingPage() {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
-                <Ticket className="w-6 h-6 rotate-12" />
-              </div>
+              <Ticket className="w-8 h-8 text-orange-500 rotate-12" />
               <span className="text-2xl font-bold tracking-tight text-white">
                 Ticke<span className="text-orange-500">X</span>
               </span>
@@ -1185,10 +1183,8 @@ export default function LandingPage() {
               <span className="text-8xl font-black text-orange-500/5 absolute top-4 right-6 select-none z-10 uppercase tracking-tighter">Q</span>
 
               <div className="relative z-10 flex flex-col items-start w-full">
-                {/* Circular Icon Container */}
-                <div className="w-12 h-12 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center mb-6 shrink-0">
-                  <QrCode className="w-5 h-5" />
-                </div>
+                {/* Icon */}
+                <QrCode className="w-8 h-8 text-orange-500 mb-6 shrink-0" />
                 
                 <span className="text-[10px] uppercase tracking-[0.2em] text-orange-600 font-extrabold block mb-1">Infrastructure</span>
                 <h3 className="text-2xl font-bold tracking-tight text-[#020617] mb-3">Smart QR Tickets</h3>
@@ -1216,10 +1212,8 @@ export default function LandingPage() {
               <span className="text-8xl font-black text-orange-500/5 absolute top-4 right-6 select-none z-10 uppercase tracking-tighter">P</span>
 
               <div className="relative z-10 flex flex-col items-start w-full">
-                {/* Circular Icon Container */}
-                <div className="w-12 h-12 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center mb-6 shrink-0">
-                  <CreditCard className="w-5 h-5" />
-                </div>
+                {/* Icon */}
+                <CreditCard className="w-8 h-8 text-orange-500 mb-6 shrink-0" />
                 
                 <span className="text-[10px] uppercase tracking-[0.2em] text-orange-600 font-extrabold block mb-1">Checkout</span>
                 <h3 className="text-2xl font-bold tracking-tight text-[#020617] mb-3">Paystack Payments</h3>
@@ -1247,10 +1241,8 @@ export default function LandingPage() {
               <span className="text-8xl font-black text-orange-500/5 absolute top-4 right-6 select-none z-10 uppercase tracking-tighter">S</span>
 
               <div className="relative z-10 flex flex-col items-start w-full">
-                {/* Circular Icon Container */}
-                <div className="w-12 h-12 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center mb-6 shrink-0">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
+                {/* Icon */}
+                <ShieldCheck className="w-8 h-8 text-orange-500 mb-6 shrink-0" />
                 
                 <span className="text-[10px] uppercase tracking-[0.2em] text-orange-600 font-extrabold block mb-1">Security</span>
                 <h3 className="text-2xl font-bold tracking-tight text-[#020617] mb-3">Anti-Fraud Validation</h3>
@@ -1415,9 +1407,7 @@ export default function LandingPage() {
             {/* Left Column: Branding and Socials */}
             <div className="lg:col-span-5 flex flex-col items-start gap-6">
               <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
-                  <Ticket className="w-6 h-6 rotate-12" />
-                </div>
+                <Ticket className="w-8 h-8 text-orange-500 rotate-12" />
                 <span className="text-2xl font-bold tracking-tight text-white">
                   Ticke<span className="text-orange-500">X</span>
                 </span>

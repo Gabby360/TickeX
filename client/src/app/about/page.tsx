@@ -26,9 +26,7 @@ export default function AboutPage() {
         </button>
 
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
-            <Ticket className="w-5 h-5 rotate-12" />
-          </div>
+          <Ticket className="w-7 h-7 text-orange-500 rotate-12" />
           <span className="text-xl font-bold tracking-tight text-white">
             Ticke<span className="text-orange-500">X</span>
           </span>
@@ -52,9 +50,7 @@ export default function AboutPage() {
         {/* Core Pillars */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
-            <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center mb-6">
-              <Zap className="w-6 h-6" />
-            </div>
+            <Zap className="w-8 h-8 text-orange-400 mb-6" />
             <h3 className="text-xl font-bold mb-3">Sub-Second Scanning</h3>
             <p className="text-slate-400 text-sm leading-relaxed font-light">
               Validate entry tickets at gate entrances in under 1 second using standard smartphone cameras—no specialized hardware required.
@@ -62,9 +58,7 @@ export default function AboutPage() {
           </div>
 
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
-            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mb-6">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
+            <ShieldCheck className="w-8 h-8 text-indigo-400 mb-6" />
             <h3 className="text-xl font-bold mb-3">Anti-Fraud Security</h3>
             <p className="text-slate-400 text-sm leading-relaxed font-light">
               Each pass is linked to a single-use encrypted token that prevents ticket duplication, fake passes, and scalping.
@@ -72,9 +66,7 @@ export default function AboutPage() {
           </div>
 
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-6">
-              <Users className="w-6 h-6" />
-            </div>
+            <Users className="w-8 h-8 text-emerald-400 mb-6" />
             <h3 className="text-xl font-bold mb-3">Instant Payouts</h3>
             <p className="text-slate-400 text-sm leading-relaxed font-light">
               Event organizers receive instant ticket sale settlements directly into Mobile Money and local bank accounts via Paystack.

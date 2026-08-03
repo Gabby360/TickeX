@@ -46,9 +46,7 @@ export default function SupportPage() {
         </button>
 
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
-            <Ticket className="w-5 h-5 rotate-12" />
-          </div>
+          <Ticket className="w-7 h-7 text-orange-500 rotate-12" />
           <span className="text-xl font-bold tracking-tight text-white">
             Ticke<span className="text-orange-500">X</span>
           </span>

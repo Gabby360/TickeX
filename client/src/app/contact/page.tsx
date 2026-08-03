@@ -41,9 +41,7 @@ export default function ContactPage() {
         </button>
 
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
-            <Ticket className="w-5 h-5 rotate-12" />
-          </div>
+          <Ticket className="w-7 h-7 text-orange-500 rotate-12" />
           <span className="text-xl font-bold tracking-tight text-white">
             Ticke<span className="text-orange-500">X</span>
           </span>
@@ -72,9 +70,7 @@ export default function ContactPage() {
 
               <div className="space-y-6 text-sm text-slate-300">
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-orange-500/10 text-orange-400 rounded-xl border border-orange-500/20 shrink-0">
-                    <Mail className="w-5 h-5" />
-                  </div>
+                  <Mail className="w-6 h-6 text-orange-400 shrink-0 mt-0.5" />
                   <div>
                     <span className="text-slate-400 text-xs font-bold uppercase block mb-0.5">Email Support</span>
                     <a href="mailto:support@tickex.com" className="text-white hover:text-orange-400 transition-colors font-medium">
@@ -84,9 +80,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-orange-500/10 text-orange-400 rounded-xl border border-orange-500/20 shrink-0">
-                    <MapPin className="w-5 h-5" />
-                  </div>
+                  <MapPin className="w-6 h-6 text-orange-400 shrink-0 mt-0.5" />
                   <div>
                     <span className="text-slate-400 text-xs font-bold uppercase block mb-0.5">Headquarters</span>
                     <p className="text-white font-medium">Accra, Ghana</p>
@@ -94,9 +88,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-orange-500/10 text-orange-400 rounded-xl border border-orange-500/20 shrink-0">
-                    <Phone className="w-5 h-5" />
-                  </div>
+                  <Phone className="w-6 h-6 text-orange-400 shrink-0 mt-0.5" />
                   <div>
                     <span className="text-slate-400 text-xs font-bold uppercase block mb-0.5">Support Hours</span>
                     <p className="text-white font-medium">Mon - Sun (8:00 AM - 10:00 PM UTC)</p>
@@ -111,9 +103,7 @@ export default function ContactPage() {
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
               {submitted ? (
                 <div className="py-12 text-center">
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle2 className="w-8 h-8" />
-                  </div>
+                  <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-6" />
                   <h3 className="text-2xl font-bold text-white mb-2">Message Received!</h3>
                   <p className="text-slate-400 text-sm mb-8 leading-relaxed max-w-sm mx-auto">
                     Thank you for reaching out. A representative from the TickeX support team will respond to your email shortly.
