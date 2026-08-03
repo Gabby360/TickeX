@@ -1451,7 +1451,7 @@ export default function LandingPage() {
                 <h4 className="font-bold text-white text-sm mb-4">Product</h4>
                 <ul className="flex flex-col gap-3 text-slate-400 text-sm">
                   <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Integrations</a></li>
+                  <li><a href="/integrations" className="hover:text-white transition-colors">Integrations</a></li>
                 </ul>
               </div>
 
@@ -1459,9 +1459,9 @@ export default function LandingPage() {
               <div>
                 <h4 className="font-bold text-white text-sm mb-4">Resources</h4>
                 <ul className="flex flex-col gap-3 text-slate-400 text-sm">
-                  <li><a href="#" className="hover:text-white transition-colors">Documentation</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Tutorials</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Support</a></li>
+                  <li><a href="/documentation" className="hover:text-white transition-colors">Documentation</a></li>
+                  <li><a href="/tutorials" className="hover:text-white transition-colors">Tutorials</a></li>
+                  <li><a href="/support" className="hover:text-white transition-colors">Support</a></li>
                 </ul>
               </div>
 
@@ -1469,9 +1469,9 @@ export default function LandingPage() {
               <div>
                 <h4 className="font-bold text-white text-sm mb-4">Company</h4>
                 <ul className="flex flex-col gap-3 text-slate-400 text-sm">
-                  <li><a href="#" className="hover:text-white transition-colors">About</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+                  <li><a href="/about" className="hover:text-white transition-colors">About</a></li>
+                  <li><a href="/careers" className="hover:text-white transition-colors">Careers</a></li>
+                  <li><a href="/contact" className="hover:text-white transition-colors">Contact</a></li>
                 </ul>
               </div>
             </div>
