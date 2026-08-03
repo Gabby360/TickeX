@@ -1435,7 +1435,7 @@ export default function LandingPage() {
             </div>
 
             {/* Right Column: Links */}
-            <div className="lg:col-span-7 grid grid-cols-3 gap-8">
+            <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-x-10 gap-y-8 sm:gap-12 w-full">
               {/* Product links */}
               <div>
                 <h4 className="font-bold text-white text-sm mb-4">Product</h4>
