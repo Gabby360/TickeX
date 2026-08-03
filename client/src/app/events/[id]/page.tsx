@@ -180,14 +180,14 @@ const FALLBACK_EVENTS: Record<string, any> = {
   },
   "8": {
     id: "8",
-    title: "StartupLens Tech & AI Live Podcast",
+    title: "The Startup Lens Tech & AI Live Podcast",
     category: "Tech",
     date: "2026-11-08T17:00:00.000Z",
     location: "The Underbridge Hotel, East Legon, Accra",
     price: 100,
-    description: "A live podcast session hosted by StartupLens featuring key founders, artificial intelligence leaders, and ecosystem builders.",
+    description: "A live podcast session hosted by The Startup Lens featuring key founders, artificial intelligence leaders, and ecosystem builders.",
     image: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=800",
-    organizer: { name: "Dennis Asiedu" },
+    organizer: { name: "Dennis Asiedu (The Startup Lens)" },
   }
 };
 

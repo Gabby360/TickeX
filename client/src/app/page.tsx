@@ -191,13 +191,13 @@ const EVENTS = [
   },
   {
     id: "8",
-    title: "StartupLens Tech & AI Live Podcast",
+    title: "The Startup Lens Tech & AI Live Podcast",
     category: "Tech",
     date: "November 08, 2026",
     location: "The Underbridge Hotel, East Legon, Accra",
     price: "GH₵100",
     image: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=800",
-    organizer: "Dennis Asiedu",
+    organizer: "Dennis Asiedu (The Startup Lens)",
     featured: true,
   }
 ];
@@ -398,7 +398,7 @@ const SUCCESS_STORIES = [
   },
   {
     name: "Dennis Asiedu",
-    role: "Founder, StartupLens",
+    role: "Founder, The Startup Lens",
     quote: "We used to have problems with duplicated tickets at the entrance. The encrypted, single-use QR codes solved fraud overnight. Scanning was smooth using just our smartphones.",
     image: "/dennis.jpg"
   }
