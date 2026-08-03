@@ -1460,7 +1460,6 @@ export default function LandingPage() {
                 <h4 className="font-bold text-white text-sm mb-4">Company</h4>
                 <ul className="flex flex-col gap-3 text-slate-400 text-sm">
                   <li><a href="/about" className="hover:text-white transition-colors">About</a></li>
-                  <li><a href="/careers" className="hover:text-white transition-colors">Careers</a></li>
                   <li><a href="/contact" className="hover:text-white transition-colors">Contact</a></li>
                 </ul>
               </div>
