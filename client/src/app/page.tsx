@@ -1486,11 +1486,6 @@ export default function LandingPage() {
             <span className="text-slate-500 text-sm font-light">
               &copy; 2026 TickeX Platforms. All rights reserved.
             </span>
-            <div className="flex items-center gap-6 text-slate-400 text-sm font-light">
-              <a href="#" className="hover:text-white transition-colors hover:underline decoration-1 underline-offset-4">Privacy policy</a>
-              <a href="#" className="hover:text-white transition-colors hover:underline decoration-1 underline-offset-4">Terms of service</a>
-              <a href="#" className="hover:text-white transition-colors hover:underline decoration-1 underline-offset-4">Cookie settings</a>
-            </div>
           </div>
 
         </div>
