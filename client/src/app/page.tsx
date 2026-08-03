@@ -926,33 +926,33 @@ export default function LandingPage() {
           </div>
 
           {/* Floating Search Widget */}
-          <div className="max-w-4xl mx-auto bg-white p-2 rounded-2xl md:rounded-full border border-slate-200 shadow-2xl shadow-black/10">
+          <div className="max-w-4xl mx-auto bg-white p-2.5 sm:p-2 rounded-2xl md:rounded-full border border-slate-200 shadow-2xl shadow-black/10">
             <div className="flex flex-col md:flex-row items-center gap-2">
               
               {/* Event Name Search */}
-              <div className="w-full flex items-center gap-3 px-4 py-3 md:py-1">
+              <div className="w-full flex items-center gap-3 px-4 py-2.5 md:py-1">
                 <Search className="w-5 h-5 text-slate-400 shrink-0" />
                 <input 
                   type="text" 
-                  placeholder="Search events, concerts, parties..."
+                  placeholder="Search events..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent border-none text-slate-800 placeholder-slate-400 focus:outline-none text-sm md:text-base"
+                  className="w-full bg-transparent border-none text-slate-800 placeholder-slate-400 focus:outline-none text-base"
                 />
               </div>
 
               {/* Separator Line */}
               <div className="hidden md:block w-px h-8 bg-slate-200" />
 
-              {/* Location Search */}
-              <div className="w-full flex items-center gap-3 px-4 py-3 md:py-1">
+              {/* Location Search (Desktop only) */}
+              <div className="hidden md:flex w-full items-center gap-3 px-4 py-1">
                 <MapPin className="w-5 h-5 text-slate-400 shrink-0" />
                 <input 
                   type="text" 
                   placeholder="Location (e.g., Accra, Kumasi)..."
                   value={locationQuery}
                   onChange={(e) => setLocationQuery(e.target.value)}
-                  className="w-full bg-transparent border-none text-slate-800 placeholder-slate-400 focus:outline-none text-sm md:text-base"
+                  className="w-full bg-transparent border-none text-slate-800 placeholder-slate-400 focus:outline-none text-base"
                 />
               </div>
 
@@ -962,7 +962,7 @@ export default function LandingPage() {
                   const el = document.getElementById("events");
                   if (el) el.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="w-full md:w-auto shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3.5 rounded-xl md:rounded-full shadow-md shadow-orange-500/20 hover:shadow-orange-500/35 transition-all duration-200"
+                className="w-full md:w-auto shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3.5 rounded-xl md:rounded-full shadow-md shadow-orange-500/20 hover:shadow-orange-500/35 transition-all duration-200 text-base"
               >
                 Search
               </button>
