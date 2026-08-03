@@ -36,7 +36,7 @@ export default function IntegrationsPage() {
       {/* Main Content */}
       <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="bg-orange-500/10 text-orange-400 border border-orange-500/20 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-6 inline-block">
+          <span className="text-orange-400 text-xs font-bold uppercase tracking-widest mb-4 inline-block">
             Ecosystem & Tools
           </span>
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
@@ -55,7 +55,7 @@ export default function IntegrationsPage() {
             <p className="text-slate-400 text-sm leading-relaxed font-light mb-4">
               Accept Mobile Money (MTN, Telecel, AT) and Debit/Credit Cards seamlessly with real-time settlement into organizer bank accounts.
             </p>
-            <span className="inline-block text-xs font-bold text-indigo-400 uppercase tracking-wider bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">
+            <span className="inline-block text-xs font-bold text-indigo-400 uppercase tracking-wider">
               Active Payment Partner
             </span>
           </div>
@@ -67,7 +67,7 @@ export default function IntegrationsPage() {
             <p className="text-slate-400 text-sm leading-relaxed font-light mb-4">
               Uses HTML5 WebKit Camera APIs to scan QR codes instantly directly inside any mobile browser without installing third-party apps.
             </p>
-            <span className="inline-block text-xs font-bold text-orange-400 uppercase tracking-wider bg-orange-500/10 px-3 py-1 rounded-full border border-orange-500/20">
+            <span className="inline-block text-xs font-bold text-orange-400 uppercase tracking-wider">
               Built-in Gate Technology
             </span>
           </div>
@@ -79,7 +79,7 @@ export default function IntegrationsPage() {
             <p className="text-slate-400 text-sm leading-relaxed font-light mb-4">
               Renders 800×1200 pixel digital ticket passes directly on HTML5 canvas with native Web Share API support for iOS Photos and Android Files.
             </p>
-            <span className="inline-block text-xs font-bold text-emerald-400 uppercase tracking-wider bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+            <span className="inline-block text-xs font-bold text-emerald-400 uppercase tracking-wider">
               High-Res Image Export
             </span>
           </div>
@@ -91,7 +91,7 @@ export default function IntegrationsPage() {
             <p className="text-slate-400 text-sm leading-relaxed font-light mb-4">
               Sends automated HTML confirmation emails with direct ticket pass links upon successful payment verification.
             </p>
-            <span className="inline-block text-xs font-bold text-purple-400 uppercase tracking-wider bg-purple-500/10 px-3 py-1 rounded-full border border-purple-500/20">
+            <span className="inline-block text-xs font-bold text-purple-400 uppercase tracking-wider">
               Automated Dispatch
             </span>
           </div>

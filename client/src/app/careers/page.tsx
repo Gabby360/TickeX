@@ -35,7 +35,7 @@ export default function CareersPage() {
 
       {/* Main Content */}
       <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center my-auto">
-        <span className="bg-orange-500/10 text-orange-400 border border-orange-500/20 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-6 inline-block">
+        <span className="text-orange-400 text-xs font-bold uppercase tracking-widest mb-4 inline-block">
           Careers at TickeX
         </span>
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
