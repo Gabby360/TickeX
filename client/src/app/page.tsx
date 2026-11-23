@@ -21,7 +21,10 @@ import {
   Loader2,
   User,
   LogOut,
-  Plus
+  Plus,
+  CheckCircle2,
+  AlertCircle,
+  Clock
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { downloadTicketPassImage } from "@/utils/ticketGenerator";
@@ -404,6 +407,18 @@ const SUCCESS_STORIES = [
   }
 ];
 
+interface SubmittedApplicationData {
+  name: string;
+  email: string;
+  organization: string;
+  category: string;
+  location: string;
+  date: string;
+  isFree: boolean;
+  price: number;
+  description: string;
+}
+
 export default function LandingPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -412,9 +427,15 @@ export default function LandingPage() {
   const [applicantEmail, setApplicantEmail] = useState("");
   const [orgName, setOrgName] = useState("");
   const [eventType, setEventType] = useState("Music");
+  const [applicantLocation, setApplicantLocation] = useState("");
+  const [applicantDate, setApplicantDate] = useState("");
+  const [isFreeEvent, setIsFreeEvent] = useState(false);
+  const [applicantPrice, setApplicantPrice] = useState("");
   const [orgDesc, setOrgDesc] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [submittingForm, setSubmittingForm] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [submittedData, setSubmittedData] = useState<SubmittedApplicationData | null>(null);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -548,22 +569,24 @@ export default function LandingPage() {
 
   const handleHostClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!user) {
-      router.push("/login");
+    if (user && (user.role === "ORGANIZER" || user.role === "ADMIN")) {
+      setShowCreateModal(true);
       return;
     }
-    if (user.role === "ORGANIZER" || user.role === "ADMIN") {
-      setShowCreateModal(true);
-    } else {
-      setApplicantName(user.name || "");
-      setApplicantEmail(user.email || "");
-      setOrgName("");
-      setEventType("Music");
-      setOrgDesc("");
-      setFormSubmitted(false);
-      setSubmittingForm(false);
-      setShowUpgradeModal(true);
-    }
+    setApplicantName(user?.name || "");
+    setApplicantEmail(user?.email || "");
+    setOrgName("");
+    setEventType("Music");
+    setApplicantLocation("");
+    setApplicantDate("");
+    setIsFreeEvent(false);
+    setApplicantPrice("");
+    setOrgDesc("");
+    setFormError("");
+    setFormSubmitted(false);
+    setSubmittingForm(false);
+    setSubmittedData(null);
+    setShowUpgradeModal(true);
   };
 
   useEffect(() => {
@@ -1564,127 +1587,336 @@ export default function LandingPage() {
       {/* UPGRADE ROLE MODAL (ORGANIZER APPLICATION) */}
       {showUpgradeModal && (
         <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white text-slate-900 rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-slate-100 animate-in zoom-in-95 duration-200 text-left max-h-[90vh] overflow-y-auto">
+          <div className="bg-white text-slate-900 rounded-3xl p-6 sm:p-8 max-w-xl w-full shadow-2xl relative border border-slate-100 animate-in zoom-in-95 duration-200 text-left max-h-[90vh] overflow-y-auto">
             {formSubmitted ? (
-              <div className="text-center py-6">
-                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-6 mx-auto animate-bounce">
+              <div className="py-4 text-center">
+                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-5 mx-auto animate-bounce">
                   <ShieldCheck className="w-9 h-9" />
                 </div>
-                <h3 className="text-2xl font-extrabold text-slate-900 mb-2">Application Submitted!</h3>
-                <p className="text-slate-500 text-sm mb-8 leading-relaxed max-w-md mx-auto text-center">
-                  Thank you for applying to host events on TickeX! Our administration team has received your application. We will review your organization details and upgrade your account to Organizer status within 24 hours. You'll receive a confirmation email once active.
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-3">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  Application Received & Pending Review
+                </div>
+                <h3 className="text-2xl font-black text-slate-900 mb-2">Application Submitted!</h3>
+                <p className="text-slate-600 text-sm mb-6 leading-relaxed max-w-md mx-auto">
+                  Thank you for applying to host on <strong className="text-slate-900">TickeX</strong>! A confirmation email has been sent to <strong className="text-orange-600">{submittedData?.email || applicantEmail}</strong>, and an alert was dispatched to our platform administration.
                 </p>
+
+                {/* Submitted Details Summary Card */}
+                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 mb-6 text-left text-xs space-y-2.5">
+                  <div className="font-bold text-slate-400 uppercase tracking-wider text-[10px] pb-1 border-b border-slate-200">
+                    Application Summary
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                    <span className="text-slate-500 font-medium">Applicant:</span>
+                    <span className="text-slate-900 font-semibold">{submittedData?.name || applicantName}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                    <span className="text-slate-500 font-medium">Organization / Brand:</span>
+                    <span className="text-slate-900 font-bold">{submittedData?.organization || orgName}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                    <span className="text-slate-500 font-medium">Category:</span>
+                    <span className="text-slate-900 font-semibold">{submittedData?.category || eventType}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                    <span className="text-slate-500 font-medium">Proposed Date:</span>
+                    <span className="text-slate-900 font-semibold">{submittedData?.date || applicantDate}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                    <span className="text-slate-500 font-medium">Location:</span>
+                    <span className="text-slate-900 font-semibold">{submittedData?.location || applicantLocation}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1">
+                    <span className="text-slate-500 font-medium">Admission:</span>
+                    <span className={`font-bold ${submittedData?.isFree ? 'text-emerald-600' : 'text-orange-600'}`}>
+                      {submittedData?.isFree ? '🎟️ Free Admission' : `💳 GH₵ ${(submittedData?.price || 0).toFixed(2)}`}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-orange-50/70 border border-orange-200/60 rounded-xl p-4 mb-6 text-left flex items-start gap-3">
+                  <Clock className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
+                  <div className="text-xs text-orange-950 leading-relaxed">
+                    <strong className="block font-bold mb-0.5 text-orange-900">What happens next?</strong>
+                    Our administration team will review your application within 24 hours. Once verified, your account will automatically be granted Organizer privileges so you can publish events and issue instant QR tickets!
+                  </div>
+                </div>
+
                 <button
                   onClick={() => setShowUpgradeModal(false)}
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-sm transition-colors duration-200"
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-sm transition-colors duration-200 shadow-md"
                 >
-                  Close
+                  Done
                 </button>
               </div>
             ) : (
               <form onSubmit={async (e) => {
                 e.preventDefault();
                 setSubmittingForm(true);
-                // Simulate submitting to administration API
-                setTimeout(() => {
-                  setSubmittingForm(false);
+                setFormError("");
+
+                const priceNum = isFreeEvent ? 0 : parseFloat(applicantPrice) || 0;
+                const payload = {
+                  name: applicantName.trim(),
+                  email: applicantEmail.trim(),
+                  organization: orgName.trim(),
+                  category: eventType,
+                  location: applicantLocation.trim(),
+                  date: applicantDate,
+                  isFree: isFreeEvent,
+                  price: priceNum,
+                  description: orgDesc.trim(),
+                };
+
+                try {
+                  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+                  const headers: Record<string, string> = {
+                    "Content-Type": "application/json",
+                  };
+                  if (token) {
+                    headers["Authorization"] = `Bearer ${token}`;
+                  }
+
+                  const res = await fetch(getApiUrl("/api/users/apply-organizer"), {
+                    method: "POST",
+                    headers,
+                    body: JSON.stringify(payload),
+                  });
+
+                  if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.message || "Failed to submit organizer application.");
+                  }
+
+                  setSubmittedData(payload);
                   setFormSubmitted(true);
-                }, 1500);
-              }} className="space-y-5">
-                <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-                  <Users className="w-6 h-6 text-orange-500 shrink-0" />
-                  <div>
-                    <h3 className="text-xl font-black text-slate-900">Become an Organizer</h3>
-                    <p className="text-slate-400 text-xs mt-0.5">Submit details to start organizing events</p>
+                } catch (err: unknown) {
+                  console.error("Submission failed:", err);
+                  const errorMessage = err instanceof Error ? err.message : "An error occurred while submitting your application. Please check your connection and try again.";
+                  setFormError(errorMessage);
+                } finally {
+                  setSubmittingForm(false);
+                }
+              }} className="space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center">
+                      <Users className="w-5 h-5 shrink-0" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-black text-slate-900">Become an Organizer</h3>
+                      <p className="text-slate-400 text-xs mt-0.5">Submit details to start hosting & organizing events</p>
+                    </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowUpgradeModal(false)}
+                    className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
 
+                {formError && (
+                  <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                    <span>{formError}</span>
+                  </div>
+                )}
+
                 {/* Editable Applicant Details */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Full Name</label>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Full Name</label>
                     <input
                       type="text"
                       required
+                      placeholder="e.g. Gabriel Agblevor"
                       value={applicantName}
                       onChange={(e) => setApplicantName(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 text-sm focus:outline-none focus:border-orange-500 focus:bg-white transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Email Address</label>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Email Address</label>
                     <input
                       type="email"
                       required
+                      placeholder="e.g. host@example.com"
                       value={applicantEmail}
                       onChange={(e) => setApplicantEmail(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 text-sm focus:outline-none focus:border-orange-500 focus:bg-white transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Organization Details */}
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Organization, Company or Individual Name</label>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Organization, Company or Individual Name</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Neon Horizon Events"
+                    placeholder="e.g. Neon Horizon Events / AfroVibes Live"
                     value={orgName}
                     onChange={(e) => setOrgName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 text-sm transition-colors"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:bg-white text-sm transition-all"
                   />
                 </div>
 
-                {/* Event Type Select */}
+                {/* Category & Date in 2 columns */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Primary Event Category</label>
+                    <select
+                      value={eventType}
+                      onChange={(e) => setEventType(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 focus:outline-none focus:border-orange-500 focus:bg-white text-sm transition-all cursor-pointer"
+                    >
+                      <option value="Music">Music & Concerts</option>
+                      <option value="Tech">Tech Conferences</option>
+                      <option value="Sports">Sports Events</option>
+                      <option value="Food">Food Festivals</option>
+                      <option value="Comedy">Comedy Shows</option>
+                      <option value="Arts & Culture">Arts & Culture</option>
+                      <option value="Parties & Nightlife">Parties & Nightlife</option>
+                      <option value="Business & Networking">Business & Networking</option>
+                      <option value="Other">Other / Workshops</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-3 h-3 text-orange-500" />
+                        Proposed Event Date
+                      </span>
+                    </label>
+                    <input
+                      type="date"
+                      required
+                      value={applicantDate}
+                      onChange={(e) => setApplicantDate(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 focus:outline-none focus:border-orange-500 focus:bg-white text-sm transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Location Input */}
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Primary Event Category</label>
-                  <select
-                    value={eventType}
-                    onChange={(e) => setEventType(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-orange-500 text-sm transition-colors"
-                  >
-                    <option value="Music">Music & Concerts</option>
-                    <option value="Tech">Tech Conferences</option>
-                    <option value="Sports">Sports Events</option>
-                    <option value="Food">Food Festivals</option>
-                    <option value="Comedy">Comedy Shows</option>
-                    <option value="Other">Other / Workshops</option>
-                  </select>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                    <span className="flex items-center gap-1.5">
+                      <MapPin className="w-3 h-3 text-orange-500" />
+                      Event Location / Venue
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Accra International Conference Centre, Kumasi City Hall, or Online"
+                    value={applicantLocation}
+                    onChange={(e) => setApplicantLocation(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:bg-white text-sm transition-all"
+                  />
+                </div>
+
+                {/* Pricing: Free vs Paid */}
+                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                      Event Admission & Pricing
+                    </label>
+                    <span className="text-[11px] text-slate-400 font-medium">Is your event free or ticketed?</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsFreeEvent(true);
+                        setApplicantPrice("");
+                      }}
+                      className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 border ${
+                        isFreeEvent
+                          ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+                          : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                      }`}
+                    >
+                      <Ticket className="w-3.5 h-3.5" />
+                      Free Admission
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsFreeEvent(false)}
+                      className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 border ${
+                        !isFreeEvent
+                          ? "bg-orange-500 text-white border-orange-500 shadow-sm"
+                          : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                      }`}
+                    >
+                      <CreditCard className="w-3.5 h-3.5" />
+                      Paid Tickets
+                    </button>
+                  </div>
+
+                  {!isFreeEvent ? (
+                    <div className="pt-1">
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                        Ticket Price (GH₵)
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">GH₵</span>
+                        <input
+                          type="number"
+                          required={!isFreeEvent}
+                          min="1"
+                          step="any"
+                          placeholder="e.g. 50.00"
+                          value={applicantPrice}
+                          onChange={(e) => setApplicantPrice(e.target.value)}
+                          className="w-full bg-white border border-slate-200 rounded-xl pl-12 pr-3.5 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 text-sm transition-all"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2 flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      Attendees will be able to register and claim digital tickets at GH₵ 0.00.
+                    </div>
+                  )}
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tell us about your events</label>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tell us about your events</label>
                   <textarea
                     required
                     rows={3}
-                    placeholder="Describe what events you plan to list on TickeX..."
+                    placeholder="Describe what events you plan to list on TickeX, expected turnout, special features..."
                     value={orgDesc}
                     onChange={(e) => setOrgDesc(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 text-sm transition-colors"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:bg-white text-sm transition-all"
                   />
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-4 pt-4">
+                <div className="flex gap-3 pt-2">
                   <button
                     type="button"
                     onClick={() => setShowUpgradeModal(false)}
                     disabled={submittingForm}
-                    className="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3.5 rounded-xl text-sm transition-colors duration-200"
+                    className="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-xl text-sm transition-colors duration-200"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submittingForm}
-                    className="w-1/2 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400 text-white font-bold py-3.5 rounded-xl text-sm shadow-md transition-colors flex items-center justify-center gap-2"
+                    className="w-2/3 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400 text-white font-bold py-3 rounded-xl text-sm shadow-md transition-colors flex items-center justify-center gap-2"
                   >
                     {submittingForm ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Submitting...
+                        Submitting Application...
                       </>
                     ) : (
                       "Submit Application"
