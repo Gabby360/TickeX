@@ -1593,8 +1593,8 @@ export default function LandingPage() {
                 <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-5 mx-auto animate-bounce">
                   <ShieldCheck className="w-9 h-9" />
                 </div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-3">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <div className="inline-flex items-center gap-1.5 text-emerald-600 text-xs font-bold uppercase tracking-wider mb-3">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   Application Received & Pending Review
                 </div>
                 <h3 className="text-2xl font-black text-slate-900 mb-2">Application Submitted!</h3>
@@ -1635,10 +1635,10 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <div className="bg-orange-50/70 border border-orange-200/60 rounded-xl p-4 mb-6 text-left flex items-start gap-3">
-                  <Clock className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
-                  <div className="text-xs text-orange-950 leading-relaxed">
-                    <strong className="block font-bold mb-0.5 text-orange-900">What happens next?</strong>
+                <div className="mb-6 text-left flex items-start gap-3 px-1">
+                  <Clock className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
+                  <div className="text-xs text-slate-500 leading-relaxed">
+                    <strong className="block font-bold mb-0.5 text-slate-800">What happens next?</strong>
                     Our administration team will review your application within 24 hours. Once verified, your account will automatically be granted Organizer privileges so you can publish events and issue instant QR tickets!
                   </div>
                 </div>
