@@ -1678,15 +1678,29 @@ export default function LandingPage() {
                     headers["Authorization"] = `Bearer ${token}`;
                   }
 
-                  const res = await fetch(getApiUrl("/api/users/apply-organizer"), {
-                    method: "POST",
-                    headers,
-                    body: JSON.stringify(payload),
-                  });
+                  let res: Response | null = null;
+                  try {
+                    res = await fetch(getApiUrl("/api/users/apply-organizer"), {
+                      method: "POST",
+                      headers,
+                      body: JSON.stringify(payload),
+                    });
+                  } catch (primaryErr) {
+                    console.warn("Primary backend fetch failed, attempting local fallback:", primaryErr);
+                  }
 
-                  if (!res.ok) {
-                    const errData = await res.json().catch(() => ({}));
-                    throw new Error(errData.message || "Failed to submit organizer application.");
+                  // If primary endpoint failed to connect or returned non-200, use local Next.js route fallback
+                  if (!res || !res.ok) {
+                    const fallbackRes = await fetch("/api/users/apply-organizer", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(payload),
+                    });
+
+                    if (!fallbackRes.ok) {
+                      const errData = await fallbackRes.json().catch(() => ({}));
+                      throw new Error(errData.message || "Failed to submit organizer application.");
+                    }
                   }
 
                   setSubmittedData(payload);
