@@ -20,11 +20,13 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Global API prefix
-  app.setGlobalPrefix('api');
+  // Global API prefix (excluding root and health check)
+  app.setGlobalPrefix('api', {
+    exclude: ['/', 'health'],
+  });
 
   const port = process.env.PORT || 4000;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   console.log(`🚀 TickeX API is running on: http://localhost:${port}/api`);
 }
 bootstrap();
