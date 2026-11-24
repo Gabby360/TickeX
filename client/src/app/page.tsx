@@ -24,7 +24,9 @@ import {
   Plus,
   CheckCircle2,
   AlertCircle,
-  Clock
+  Clock,
+  ArrowLeft,
+  Edit3
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { downloadTicketPassImage } from "@/utils/ticketGenerator";
@@ -432,6 +434,7 @@ export default function LandingPage() {
   const [isFreeEvent, setIsFreeEvent] = useState(false);
   const [applicantPrice, setApplicantPrice] = useState("");
   const [orgDesc, setOrgDesc] = useState("");
+  const [isReviewing, setIsReviewing] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [submittingForm, setSubmittingForm] = useState(false);
   const [formError, setFormError] = useState("");
@@ -567,6 +570,72 @@ export default function LandingPage() {
     }
   };
 
+  const handleExecuteSubmit = async () => {
+    setSubmittingForm(true);
+    setFormError("");
+
+    const priceNum = isFreeEvent ? 0 : parseFloat(applicantPrice) || 0;
+    const payload: SubmittedApplicationData = {
+      name: applicantName.trim(),
+      email: applicantEmail.trim(),
+      organization: orgName.trim(),
+      category: eventType,
+      location: applicantLocation.trim(),
+      date: applicantDate,
+      isFree: isFreeEvent,
+      price: priceNum,
+      description: orgDesc.trim(),
+    };
+
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      let res: Response | null = null;
+      try {
+        res = await fetch(getApiUrl("/api/users/apply-organizer"), {
+          method: "POST",
+          headers,
+          body: JSON.stringify(payload),
+        });
+      } catch (primaryErr) {
+        console.warn("Primary backend fetch failed, attempting local fallback:", primaryErr);
+      }
+
+      // If primary endpoint failed to connect or returned non-200, use local Next.js route fallback
+      if (!res || !res.ok) {
+        const fallbackRes = await fetch("/api/users/apply-organizer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!fallbackRes.ok) {
+          const errData = await fallbackRes.json().catch(() => ({}));
+          throw new Error(errData.message || "Failed to submit organizer application.");
+        }
+      }
+
+      setSubmittedData(payload);
+      setFormSubmitted(true);
+      setIsReviewing(false);
+    } catch (err: unknown) {
+      console.error("Submission failed:", err);
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An error occurred while submitting your application. Please check your connection and try again.";
+      setFormError(errorMessage);
+    } finally {
+      setSubmittingForm(false);
+    }
+  };
+
   const handleHostClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (user && (user.role === "ORGANIZER" || user.role === "ADMIN")) {
@@ -583,6 +652,7 @@ export default function LandingPage() {
     setApplicantPrice("");
     setOrgDesc("");
     setFormError("");
+    setIsReviewing(false);
     setFormSubmitted(false);
     setSubmittingForm(false);
     setSubmittedData(null);
@@ -1593,10 +1663,6 @@ export default function LandingPage() {
                 <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-5 mx-auto animate-bounce">
                   <ShieldCheck className="w-9 h-9" />
                 </div>
-                <div className="inline-flex items-center gap-1.5 text-emerald-600 text-xs font-bold uppercase tracking-wider mb-3">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  Application Received & Pending Review
-                </div>
                 <h3 className="text-2xl font-black text-slate-900 mb-2">Application Submitted!</h3>
                 <p className="text-slate-600 text-sm mb-6 leading-relaxed max-w-md mx-auto">
                   Thank you for applying to host on <strong className="text-slate-900">TickeX</strong>! A confirmation email has been sent to <strong className="text-orange-600">{submittedData?.email || applicantEmail}</strong>, and an alert was dispatched to our platform administration.
@@ -1650,68 +1716,128 @@ export default function LandingPage() {
                   Done
                 </button>
               </div>
+            ) : isReviewing ? (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center">
+                      <CheckCircle2 className="w-5 h-5 shrink-0" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-black text-slate-900">Review Application</h3>
+                      <p className="text-slate-400 text-xs mt-0.5">Please review your entries before final submission</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowUpgradeModal(false)}
+                    className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {formError && (
+                  <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                    <span>{formError}</span>
+                  </div>
+                )}
+
+                {/* Review Details Card */}
+                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 text-left text-xs space-y-2.5">
+                  <div className="flex items-center justify-between pb-1.5 border-b border-slate-200">
+                    <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">
+                      Application Preview
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsReviewing(false)}
+                      className="text-orange-600 hover:text-orange-700 font-bold text-xs flex items-center gap-1 hover:underline transition-colors"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                      Edit Details
+                    </button>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                    <span className="text-slate-500 font-medium">Applicant Name:</span>
+                    <span className="text-slate-900 font-semibold">{applicantName}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                    <span className="text-slate-500 font-medium">Email Address:</span>
+                    <span className="text-slate-900 font-semibold">{applicantEmail}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                    <span className="text-slate-500 font-medium">Organization / Brand:</span>
+                    <span className="text-slate-900 font-bold">{orgName}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                    <span className="text-slate-500 font-medium">Primary Category:</span>
+                    <span className="text-slate-900 font-semibold">{eventType}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                    <span className="text-slate-500 font-medium">Proposed Date:</span>
+                    <span className="text-slate-900 font-semibold">{applicantDate}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                    <span className="text-slate-500 font-medium">Proposed Location:</span>
+                    <span className="text-slate-900 font-semibold">{applicantLocation}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                    <span className="text-slate-500 font-medium">Admission & Pricing:</span>
+                    <span className={`font-bold ${isFreeEvent ? 'text-emerald-600' : 'text-orange-600'}`}>
+                      {isFreeEvent ? '🎟️ Free Admission' : `💳 GH₵ ${(parseFloat(applicantPrice) || 0).toFixed(2)}`}
+                    </span>
+                  </div>
+                  <div className="pt-1.5">
+                    <span className="text-slate-500 font-medium block mb-1">About Your Events:</span>
+                    <div className="bg-white border border-slate-200 rounded-xl p-3 text-slate-700 whitespace-pre-wrap leading-relaxed text-xs">
+                      {orgDesc}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-xs text-slate-500 flex items-center gap-2 px-1">
+                  <Clock className="w-4 h-4 text-orange-500 shrink-0" />
+                  <span>Review all entries above. Click <strong>Back & Edit</strong> if you need to make changes.</span>
+                </div>
+
+                {/* Review Action Buttons */}
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsReviewing(false)}
+                    disabled={submittingForm}
+                    className="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl text-sm transition-colors duration-200 flex items-center justify-center gap-1.5"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back & Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleExecuteSubmit}
+                    disabled={submittingForm}
+                    className="w-2/3 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400 text-white font-bold py-3 rounded-xl text-sm shadow-md transition-colors flex items-center justify-center gap-2"
+                  >
+                    {submittingForm ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Submitting Application...
+                      </>
+                    ) : (
+                      <>
+                        Confirm & Submit
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             ) : (
-              <form onSubmit={async (e) => {
+              <form onSubmit={(e) => {
                 e.preventDefault();
-                setSubmittingForm(true);
                 setFormError("");
-
-                const priceNum = isFreeEvent ? 0 : parseFloat(applicantPrice) || 0;
-                const payload = {
-                  name: applicantName.trim(),
-                  email: applicantEmail.trim(),
-                  organization: orgName.trim(),
-                  category: eventType,
-                  location: applicantLocation.trim(),
-                  date: applicantDate,
-                  isFree: isFreeEvent,
-                  price: priceNum,
-                  description: orgDesc.trim(),
-                };
-
-                try {
-                  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-                  const headers: Record<string, string> = {
-                    "Content-Type": "application/json",
-                  };
-                  if (token) {
-                    headers["Authorization"] = `Bearer ${token}`;
-                  }
-
-                  let res: Response | null = null;
-                  try {
-                    res = await fetch(getApiUrl("/api/users/apply-organizer"), {
-                      method: "POST",
-                      headers,
-                      body: JSON.stringify(payload),
-                    });
-                  } catch (primaryErr) {
-                    console.warn("Primary backend fetch failed, attempting local fallback:", primaryErr);
-                  }
-
-                  // If primary endpoint failed to connect or returned non-200, use local Next.js route fallback
-                  if (!res || !res.ok) {
-                    const fallbackRes = await fetch("/api/users/apply-organizer", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify(payload),
-                    });
-
-                    if (!fallbackRes.ok) {
-                      const errData = await fallbackRes.json().catch(() => ({}));
-                      throw new Error(errData.message || "Failed to submit organizer application.");
-                    }
-                  }
-
-                  setSubmittedData(payload);
-                  setFormSubmitted(true);
-                } catch (err: unknown) {
-                  console.error("Submission failed:", err);
-                  const errorMessage = err instanceof Error ? err.message : "An error occurred while submitting your application. Please check your connection and try again.";
-                  setFormError(errorMessage);
-                } finally {
-                  setSubmittingForm(false);
-                }
+                setIsReviewing(true);
               }} className="space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                   <div className="flex items-center gap-3">
@@ -1924,17 +2050,10 @@ export default function LandingPage() {
                   </button>
                   <button
                     type="submit"
-                    disabled={submittingForm}
-                    className="w-2/3 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400 text-white font-bold py-3 rounded-xl text-sm shadow-md transition-colors flex items-center justify-center gap-2"
+                    className="w-2/3 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl text-sm shadow-md transition-colors flex items-center justify-center gap-2"
                   >
-                    {submittingForm ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Submitting Application...
-                      </>
-                    ) : (
-                      "Submit Application"
-                    )}
+                    <span>Review Application</span>
+                    <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </form>
